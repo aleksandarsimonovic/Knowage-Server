@@ -1,0 +1,36 @@
+{
+  "globalFilterFields": [
+    "valueCd",
+    "valueName",
+    "domainCode",
+    "domainName",
+    "valueDescription"
+  ],
+  "table": {
+    "column": {
+      "style": {
+        "width": "18%",
+        "word-break": "break-all"
+      }
+    },
+    "iconColumn": {
+      "style": {
+        "text-align": "end"
+      }
+    }
+  },
+  "form": {
+    "style": {
+      "width": "60vw"
+    }
+  },
+  "operation": {
+    "insert": {
+      "toastTitle": "common.toast.createTitle"
+    },
+    "update": {
+      "toastTitle": "common.toast.updateTitle"
+    },
+    "success": "common.toast.success"
+  }
+}
