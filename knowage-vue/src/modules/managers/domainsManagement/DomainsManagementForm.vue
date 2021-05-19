@@ -128,7 +128,7 @@
             @blur="v$.domain.domainName.$touch()"
           />
           <label for="domainName" class="kn-material-input-label">
-            {{ $t('common.validation.extendedAlphanumeric') }}
+            {{ $t('managers.domainsManagement.domainName') }}
             *
           </label>
         </span>
