@@ -1,0 +1,53 @@
+{
+  "data": [
+    {
+      "id": 1000,
+      "label": "Business Questions",
+      "name": "Business Questions",
+      "description": "Business Questions",
+      "dataType": "LONG_TEXT"
+    },
+    {
+      "id": 2000,
+      "label": "Creator",
+      "name": "Creator",
+      "description": "Creator",
+      "dataType": "SHORT_TEXT"
+    },
+    {
+      "id": 3000,
+      "label": "Description",
+      "name": "Description",
+      "description": "Description",
+      "dataType": "SHORT_TEXT"
+    },
+    {
+      "id": 4000,
+      "label": "KeyWords",
+      "name": "KeyWords",
+      "description": "KeyWords",
+      "dataType": "SHORT_TEXT"
+    },
+    {
+      "id": 5000,
+      "label": "Language",
+      "name": "Language",
+      "description": "Language",
+      "dataType": "SHORT_TEXT"
+    },
+    {
+      "id": 6000,
+      "label": "Long Description",
+      "name": "Long Description",
+      "description": "Long Description",
+      "dataType": "FILE"
+    },
+    {
+      "id": 7000,
+      "label": "Objective",
+      "name": "Objective",
+      "description": "Objective",
+      "dataType": "FILE"
+    }
+  ]
+}
