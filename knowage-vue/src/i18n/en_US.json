@@ -98,6 +98,18 @@
 			"templateSuccessfullyUploaded": "@:managers.widgetGallery.templateSuccessfully uploaded",
 			"title": "Gallery management",
 			"uploadTemplate": "Upload template"
+		},
+		"configurationManagement": {
+			"title": "Configuration Management",
+			"createNewHeader": "Create new configuration",
+			"headers": {
+				"label": "Label",
+				"name": "Name",
+				"valueCheck": "Value Check",
+				"category": "Category",
+				"active": "Active",
+				"description": "Description"
+			}
 		}
 	},
 	"newsDialog": {
