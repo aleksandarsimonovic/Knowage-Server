@@ -1,4 +1,26 @@
-{
+{ 
+  "columns": [
+    {
+      "field": "valueCd",
+      "header": "managers.domainsManagement.valueCode"
+    },
+    {
+      "field": "valueName",
+      "header": "managers.domainsManagement.valueName"
+    },
+    {
+     "field": "domainCode",
+      "header": "managers.domainsManagement.domainCode"
+    },
+    {
+      "field": "domainName",
+      "header": "managers.domainsManagement.domainName"
+    },
+    {
+      "field": "valueDescription",
+      "header": "managers.domainsManagement.valueDescription"
+    }
+  ],
   "globalFilterFields": [
     "valueCd",
     "valueName",

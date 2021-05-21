@@ -27,20 +27,12 @@
           >
         </span>
 
-        <div
-          v-if="v$.domain.valueCd.$invalid && v$.domain.valueCd.$dirty"
-          class="p-error"
-        >
-          <small v-if="v$.domain.valueCd.required.$invalid">{{
-            v$.domain.valueCd.required.$message
-          }}</small>
-          <small v-if="v$.domain.valueCd.maxLength.$invalid">{{
-            v$.domain.valueCd.maxLength.$message
-          }}</small>
-          <small v-if="v$.domain.valueCd.regex.$invalid">
-            {{ $t('common.validation.extendedAlphanumeric') }}
-          </small>
-        </div>
+        <KnValidationMessages
+          :vComp="v$.domain.valueCd"
+          :additionalTranslateParams="{
+            fieldName: $t('managers.domainsManagement.valueCode')
+          }"
+        ></KnValidationMessages>
       </div>
 
       <div class="p-field">
@@ -62,20 +54,12 @@
           </label>
         </span>
 
-        <div
-          v-if="v$.domain.valueName.$invalid && v$.domain.valueName.$dirty"
-          class="p-error"
-        >
-          <small v-if="v$.domain.valueName.required.$invalid">{{
-            v$.domain.valueName.required.$message
-          }}</small>
-          <small v-if="v$.domain.valueName.maxLength.$invalid">{{
-            v$.domain.valueName.maxLength.$message
-          }}</small>
-          <small v-if="v$.domain.valueName.regex.$invalid">
-            {{ $t('common.validation.extendedAlphanumeric') }}
-          </small>
-        </div>
+        <KnValidationMessages
+          :vComp="v$.domain.valueName"
+          :additionalTranslateParams="{
+            fieldName: $t('managers.domainsManagement.valueName')
+          }"
+        ></KnValidationMessages>
       </div>
 
       <div class="p-field">
@@ -97,20 +81,12 @@
           </label>
         </span>
 
-        <div
-          v-if="v$.domain.domainCode.$invalid && v$.domain.domainCode.$dirty"
-          class="p-error"
-        >
-          <small v-if="v$.domain.domainCode.required.$invalid">{{
-            v$.domain.domainCode.required.$message
-          }}</small>
-          <small v-if="v$.domain.domainCode.maxLength.$invalid">{{
-            v$.domain.domainCode.maxLength.$message
-          }}</small>
-          <small v-if="v$.domain.domainCode.regex.$invalid">
-            {{ v$.domain.domainCode.regex.$message }}
-          </small>
-        </div>
+        <KnValidationMessages
+          :vComp="v$.domain.domainCode"
+          :additionalTranslateParams="{
+            fieldName: $t('managers.domainsManagement.domainCode')
+          }"
+        ></KnValidationMessages>
       </div>
 
       <div class="p-field">
@@ -133,20 +109,12 @@
           </label>
         </span>
 
-        <div
-          v-if="v$.domain.domainName.$invalid && v$.domain.domainName.$dirty"
-          class="p-error"
-        >
-          <small v-if="v$.domain.domainName.required.$invalid">{{
-            v$.domain.domainName.required.$message
-          }}</small>
-          <small v-if="v$.domain.domainName.maxLength.$invalid">{{
-            v$.domain.domainName.maxLength.$message
-          }}</small>
-          <small v-if="v$.domain.domainName.regex.$invalid">
-            {{ $t('common.validation.extendedAlphanumeric') }}
-          </small>
-        </div>
+        <KnValidationMessages
+          :vComp="v$.domain.domainName"
+          :additionalTranslateParams="{
+            fieldName: $t('managers.domainsManagement.domainName')
+          }"
+        ></KnValidationMessages>
       </div>
 
       <div class="p-field">
@@ -169,23 +137,12 @@
           </label>
         </span>
 
-        <div
-          v-if="
-            v$.domain.valueDescription.$invalid &&
-              v$.domain.valueDescription.$dirty
-          "
-          class="p-error"
-        >
-          <small v-if="v$.domain.valueDescription.required.$invalid">{{
-            v$.domain.valueDescription.required.$message
-          }}</small>
-          <small v-if="v$.domain.valueDescription.maxLength.$invalid">{{
-            v$.domain.valueDescription.maxLength.$message
-          }}</small>
-          <small v-if="v$.domain.valueDescription.regex.$invalid">
-            {{ $t('common.validation.extendedAlphanumeric') }}
-          </small>
-        </div>
+        <KnValidationMessages
+          :vComp="v$.domain.valueDescription"
+          :additionalTranslateParams="{
+            fieldName: $t('managers.domainsManagement.valueDescription')
+          }"
+        ></KnValidationMessages>
       </div>
     </form>
 
@@ -207,12 +164,13 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { required, maxLength, helpers } from '@vuelidate/validators';
+import { required, maxLength } from '@vuelidate/validators';
 import { iDomain } from './DomainsManagement';
 import { extendedAlphanumeric } from '@/helpers/commons/regexHelper';
 import axios from 'axios';
 import Dialog from 'primevue/dialog';
 import domainsManagementDescriptor from './DomainsManagementDescriptor.json';
+import KnValidationMessages from '@/components/UI/KnValidatonMessages.vue';
 import useValidate from '@vuelidate/core';
 
 const regex = (value: any) => {
@@ -220,8 +178,8 @@ const regex = (value: any) => {
 };
 
 export default defineComponent({
-  name: 'domain-management-form',
-  components: { Dialog },
+  name: 'domain-management-dialog',
+  components: { Dialog, KnValidationMessages },
   props: {
     model: {
       type: Object,
@@ -242,71 +200,28 @@ export default defineComponent({
     return {
       domain: {
         valueCd: {
-          required: helpers.withMessage(
-            this.$t('common.validation.required'),
-            required
-          ),
-          maxLength: helpers.withMessage(
-            this.$t('common.validation.maximumCharacters', {
-              length: 100
-            }),
-            maxLength(100)
-          ),
+          required,
+          maximumCharacters: maxLength(100),
           regex
         },
         valueName: {
-          required: helpers.withMessage(
-            this.$t('common.validation.required'),
-            required
-          ),
-          maxLength: helpers.withMessage(
-            this.$t('common.validation.maximumCharacters', {
-              length: 40
-            }),
-            maxLength(40)
-          ),
-          regex: helpers.withMessage(
-            this.$t('common.validation.extendedAlphanumeric'),
-            regex
-          )
+          required,
+          maximumCharacters: maxLength(40),
+          regex
         },
         domainCode: {
-          required: helpers.withMessage(
-            this.$t('common.validation.required'),
-            required
-          ),
-          maxLength: helpers.withMessage(
-            this.$t('common.validation.maximumCharacters', {
-              length: 20
-            }),
-            maxLength(20)
-          ),
+          required,
+          maximumCharacters: maxLength(20),
           regex
         },
         domainName: {
-          required: helpers.withMessage(
-            this.$t('common.validation.required'),
-            required
-          ),
-          maxLength: helpers.withMessage(
-            this.$t('common.validation.maximumCharacters', {
-              length: 40
-            }),
-            maxLength(40)
-          ),
+          required,
+          maximumCharacters: maxLength(40),
           regex
         },
         valueDescription: {
-          required: helpers.withMessage(
-            this.$t('common.validation.required'),
-            required
-          ),
-          maxLength: helpers.withMessage(
-            this.$t('common.validation.maximumCharacters', {
-              length: 160
-            }),
-            maxLength(160)
-          ),
+          required,
+          maximumCharacters: maxLength(160),
           regex
         }
       }
@@ -324,7 +239,12 @@ export default defineComponent({
   },
   mounted() {
     if (this.model) {
-      this.domain = this.model as iDomain;
+      this.domain = { ...this.model } as iDomain;
+    }
+  },
+  watch: {
+    model() {
+      this.domain = { ...this.model } as iDomain;
     }
   },
   methods: {

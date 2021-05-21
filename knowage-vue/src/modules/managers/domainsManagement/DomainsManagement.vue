@@ -66,9 +66,9 @@
           </template>
 
           <Column
-            v-for="col of columns"
+            v-for="col of domainsManagementDescriptor.columns"
             :field="col.field"
-            :header="col.header"
+            :header="$t(col.header)"
             :key="col.field"
             :style="domainsManagementDescriptor.table.column.style"
             :sortable="true"
@@ -84,11 +84,6 @@
           <Column :style="domainsManagementDescriptor.table.iconColumn.style">
             <template #body="slotProps">
               <Button
-                icon="pi pi-pencil"
-                class="p-button-link"
-                @click="showForm(slotProps)"
-              />
-              <Button
                 icon="pi pi-trash"
                 class="p-button-link"
                 @click="deleteDomainConfirm(slotProps.data.valueId)"
@@ -100,12 +95,12 @@
       </div>
 
       <div v-if="formVisible">
-        <domainsManagementForm
+        <DomainsManagementDialog
           :model="selectedDomain"
           @created="reloadDomains"
           @close="closeForm"
           data-test="domain-form"
-        ></domainsManagementForm>
+        ></DomainsManagementDialog>
       </div>
     </div>
   </div>
@@ -114,12 +109,13 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { iDomain } from './DomainsManagement';
-import { FilterMatchMode, FilterOperator } from 'primevue/api';
+import { FilterOperator } from 'primevue/api';
+import { filterDefault } from '@/helpers/commons/filterHelper';
 import axios from 'axios';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import domainsManagementDescriptor from './DomainsManagementDescriptor.json';
-import domainsManagementForm from './DomainsManagementForm.vue';
+import DomainsManagementDialog from './DomainsManagementDialog.vue';
 import KnFabButton from '@/components/UI/KnFabButton.vue';
 
 export default defineComponent({
@@ -127,56 +123,34 @@ export default defineComponent({
   components: {
     Column,
     DataTable,
-    domainsManagementForm,
+    DomainsManagementDialog,
     KnFabButton
   },
   data() {
     return {
       domainsManagementDescriptor: domainsManagementDescriptor,
-      columns: [
-        {
-          field: 'valueCd',
-          header: this.$t('managers.domainsManagement.valueCode')
-        },
-        {
-          field: 'valueName',
-          header: this.$t('managers.domainsManagement.valueName')
-        },
-        {
-          field: 'domainCode',
-          header: this.$t('managers.domainsManagement.domainCode')
-        },
-        {
-          field: 'domainName',
-          header: this.$t('managers.domainsManagement.domainName')
-        },
-        {
-          field: 'valueDescription',
-          header: this.$t('managers.domainsManagement.valueDescription')
-        }
-      ],
       domains: [] as iDomain[],
       filters: {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        global: [filterDefault],
         valueCd: {
           operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }]
+          constraints: [filterDefault]
         },
         valueName: {
           operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }]
+          constraints: [filterDefault]
         },
         domainCode: {
           operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }]
+          constraints: [filterDefault]
         },
         domainName: {
           operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }]
+          constraints: [filterDefault]
         },
         valueDescription: {
           operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }]
+          constraints: [filterDefault]
         }
       } as Object,
       formVisible: false,
@@ -218,7 +192,7 @@ export default defineComponent({
           this.loadAllDomains();
         });
     },
-    showForm(event) {
+    showForm(event: any) {
       if (event) {
         this.selectedDomain = event.data;
       }

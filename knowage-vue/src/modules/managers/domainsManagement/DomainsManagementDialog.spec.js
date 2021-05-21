@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import axios from 'axios';
 import Button from 'primevue/button';
-import DomainsManagementForm from './DomainsManagementForm.vue';
+import DomainsManagementDialog from './DomainsManagementDialog.vue';
 import flushPromises from 'flush-promises';
 import InputText from 'primevue/inputtext';
 
@@ -15,7 +15,7 @@ const $store = {
 };
 
 const factory = () => {
-  return mount(DomainsManagementForm, {
+  return mount(DomainsManagementDialog, {
     global: {
       plugins: [],
       stubs: { Button, InputText },
@@ -53,6 +53,7 @@ describe('Domains Management Dialog', () => {
       process.env.VUE_APP_RESTFUL_SERVICES_PATH + '2.0/domains',
       mockedDomain
     );
+    // shows success info if data is saved
     expect($store.commit).toHaveBeenCalledTimes(1);
 
     mockedDomain.valueId = 1;
@@ -65,11 +66,5 @@ describe('Domains Management Dialog', () => {
       mockedDomain
     );
     expect($store.commit).toHaveBeenCalledTimes(2);
-  });
-  it('shows success info if data is saved', () => {
-    // tested above
-  });
-  it('shows error info if save service returns error', () => {
-    // not in this component
   });
 });

@@ -5,6 +5,4 @@ export interface iDomain {
     domainCode: string;
     domainName: string;
     valueDescription: string;
-    translatedValueName?: string;
-    translatedValueDescription?: string;
 }
