@@ -33,18 +33,13 @@
         }}</label>
       </span>
 
-      <div
-        v-if="v$.metadata.label.$invalid && v$.metadata.label.$dirty"
-        class="p-error"
+      <KnValidationMessages
+        :vComp="v$.metadata.label"
+        :additionalTranslateParams="{
+          fieldName: $t('common.label')
+        }"
       >
-        <small
-          class="p-error"
-          v-for="(error, index) of v$.metadata.label.$errors"
-          :key="index"
-        >
-          {{ error.$message }}
-        </small>
-      </div>
+      </KnValidationMessages>
     </div>
 
     <div class="p-field">
@@ -65,18 +60,14 @@
           $t('common.name')
         }}</label>
       </span>
-      <div
-        v-if="v$.metadata.name.$invalid && v$.metadata.name.$dirty"
-        class="p-error"
+
+      <KnValidationMessages
+        :vComp="v$.metadata.name"
+        :additionalTranslateParams="{
+          fieldName: $t('common.name')
+        }"
       >
-        <small
-          class="p-error"
-          v-for="(error, index) of v$.metadata.name.$errors"
-          :key="index"
-        >
-          {{ error.$message }}
-        </small>
-      </div>
+      </KnValidationMessages>
     </div>
 
     <div class="p-field">
@@ -90,7 +81,7 @@
             'p-invalid':
               v$.metadata.description.$invalid && v$.metadata.description.$dirty
           }"
-          @blur="v$.metadata.label.$touch()"
+          @blur="v$.metadata.description.$touch()"
           @change="setDirty"
           data-test="description-input"
         />
@@ -98,20 +89,14 @@
           $t('common.description')
         }}</label>
       </span>
-      <div
-        v-if="
-          v$.metadata.description.$invalid && v$.metadata.description.$dirty
-        "
-        class="p-error"
+
+      <KnValidationMessages
+        :vComp="v$.metadata.description"
+        :additionalTranslateParams="{
+          fieldName: $t('common.description')
+        }"
       >
-        <small
-          class="p-error"
-          v-for="(error, index) of v$.metadata.description.$errors"
-          :key="index"
-        >
-          {{ error.$message }}
-        </small>
-      </div>
+      </KnValidationMessages>
     </div>
 
     <div class="p-field">
@@ -135,29 +120,26 @@
           $t('common.type')
         }}</label>
       </span>
-      <div
-        v-if="v$.metadata.dataType.$invalid && v$.metadata.dataType.$dirty"
-        class="p-error"
+
+      <KnValidationMessages
+        :vComp="v$.metadata.dataType"
+        :additionalTranslateParams="{
+          fieldName: $t('common.type')
+        }"
       >
-        <small
-          class="p-error"
-          v-for="(error, index) of v$.metadata.dataType.$errors"
-          :key="index"
-        >
-          {{ error.$message }}
-        </small>
-      </div>
+      </KnValidationMessages>
     </div>
   </form>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { required, helpers } from '@vuelidate/validators';
+import { required } from '@vuelidate/validators';
 import { extendedAlphanumeric } from '@/helpers/commons/regexHelper';
 import { iMetadata } from './Metadata';
 import axios from 'axios';
 import Dropdown from 'primevue/dropdown';
+import KnValidationMessages from '@/components/UI/KnValidatonMessages.vue';
 import metadataDescriptor from './MetadataDescriptor.json';
 import useValidate from '@vuelidate/core';
 
@@ -168,7 +150,8 @@ const regex = (value: any) => {
 export default defineComponent({
   name: 'metadata-form',
   components: {
-    Dropdown
+    Dropdown,
+    KnValidationMessages
   },
   props: {
     model: {
@@ -191,39 +174,23 @@ export default defineComponent({
     return {
       metadata: {
         label: {
-          required: helpers.withMessage(
-            this.$t('common.validation.required'),
-            required
-          ),
-          regex: helpers.withMessage(
-            this.$t('common.validation.extendedAlphanumeric'),
-            regex
-          )
+          required,
+          regex
         },
         name: {
-          required: helpers.withMessage(
-            this.$t('common.validation.required'),
-            required
-          ),
-          regex: helpers.withMessage(
-            this.$t('common.validation.extendedAlphanumeric'),
-            regex
-          )
+          required,
+          regex
         },
         description: {
-          regex: helpers.withMessage(
-            this.$t('common.validation.extendedAlphanumeric'),
-            regex
-          )
+          regex
         },
         dataType: {
-          required: helpers.withMessage(
-            this.$t('common.validation.required'),
-            required
-          ),
-          validType(type: string) {
+          required,
+          regex(type: string) {
             if (type && type.length > 0) {
-              return type === 'LONG_TEXT' || type === 'SHORT_TEXT' || type === 'FILE';
+              return (
+                type === 'LONG_TEXT' || type === 'SHORT_TEXT' || type === 'FILE'
+              );
             }
             return false;
           }

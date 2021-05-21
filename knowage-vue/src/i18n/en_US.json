@@ -52,9 +52,9 @@
 		},
 		"type": "type",
 		 "validation": {
-			"extendedAlphanumeric": "Invalid format",
+			"regex": "Invalid format",
 			"maximumCharacters": "The maximum length allowed is {length}",
-			"required": "This is required"
+			"required": "{fieldName} is required"
 		},
 		"version": "version",
 		"warning": {}
@@ -116,7 +116,9 @@
 			"uploadTemplate": "Upload template"
 		},
 		"metadata": {
-			"title": "Metadata list"
+			"confirmUnsavedChangesMessage": "You have not saved your recent changes. Continue without saving?",
+			"title": "Metadata list",
+			"unsavedChangesHeader": "Unsaved changes"
 		}
 	},
 	"newsDialog": {

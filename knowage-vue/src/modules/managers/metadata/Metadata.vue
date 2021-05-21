@@ -113,7 +113,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { iMetadata } from './Metadata';
-import { FilterMatchMode, FilterOperator } from 'primevue/api';
+import { FilterOperator } from 'primevue/api';
+import {filterDefault} from '@/helpers/commons/filterHelper'
 import axios from 'axios';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -128,22 +129,22 @@ export default defineComponent({
       metadataDescriptor: metadataDescriptor,
       metadataList: [] as iMetadata[],
       filters: {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        global: [filterDefault],
         label: {
           operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }]
+          constraints: [filterDefault]
         },
         name: {
           operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }]
+          constraints: [filterDefault]
         },
         description: {
           operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }]
+          constraints: [filterDefault]
         },
         type: {
           operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }]
+          constraints: [filterDefault]
         }
       },
       formVisible: false,
@@ -169,9 +170,9 @@ export default defineComponent({
         this.setSelectedMetadata(event);
       } else {
         this.$confirm.require({
-          // TODO translation
-          message: 'You have not saved your recent changes. Continue without saving?',
-          header: 'Unsaved changes',
+          // TOASK translation
+          message: this.$t('managers.metadata.confirmUnsavedChangesMessage'),
+          header: this.$t('managers.metadata;unsavedChangesHeader'),
           icon: 'pi pi-exclamation-triangle',
           accept: () => {
             this.touched = false;
