@@ -27,7 +27,7 @@
 		"label": "label",
 		"loggedUser": "logged user",
 		"name": "name",
-    	"new": "new",
+    	        "new": "new",
 		"save": "save",
 		"search": "search",
 		"table": {
