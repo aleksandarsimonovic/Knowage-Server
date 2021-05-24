@@ -24,6 +24,8 @@
                 class="p-datatable-sm kn-table"
                 dataKey="id"
                 responsiveLayout="scroll"
+                v-model:selection="selectedRole"
+                selectionMode="single"
                 v-model:filters="filters"
                 filterDisplay="menu"
                 :globalFilterFields="rolesDecriptor.globalFilterFields"
@@ -84,32 +86,20 @@
           <TabView class="tabview-custom" ref="tabview4">
             <TabPanel>
               <template #header>
-                <span>DETAIL</span>
+                <span>{{ $t('managers.rolesManagement.detail.title') }}</span>
               </template>
               <Card :style="rolesManagementTabViewDescriptor.card.style">
                 <template #content>
                   <form class="p-fluid p-m-5">
                     <div class="p-field">
                       <span class="p-float-label">
-                        <InputText
-                          id="name"
-                          class="kn-material-input"
-                          type="text"
-                        />
-                        <label for="name" class="kn-material-input-label">
-                          Name *
-                        </label>
+                        <InputText id="name" class="kn-material-input" type="text" />
+                        <label for="name" class="kn-material-input-label"> {{ $t('managers.rolesManagement.detail.name') }} * </label>
                       </span>
 
                       <span class="p-float-label">
-                        <InputText
-                          id="code"
-                          class="kn-material-input"
-                          type="text"
-                        />
-                        <label for="code" class="kn-material-input-label">
-                          Code
-                        </label>
+                        <InputText id="code" class="kn-material-input" type="text" />
+                        <label for="code" class="kn-material-input-label"> {{ $t('managers.rolesManagement.detail.code') }} </label>
                       </span>
 
                       <span class="p-float-label">
@@ -118,25 +108,23 @@
                           class="kn-material-input"
                           type="text"
                         />
-                        <label
-                          for="description"
-                          class="kn-material-input-label"
-                        >
-                          Description
-                        </label>
+                        <label for="description" class="kn-material-input-label"> {{ $t('managers.rolesManagement.detail.description') }} </label>
                       </span>
 
                       <span class="p-float-label">
                         <Dropdown
                           id="roleType"
                           class="kn-material-input"
-                          :options="rolesDecriptor.roleType"
-                          optionLabel="name"
-                          optionValue="value"
+                          :options="roleTypes"
+                          optionLabel="VALUE_CD"
+                          optionValue="VALUE_CD"
                         />
-                        <label for="roleType" class="kn-material-input-label">
-                          Description
-                        </label>
+                        <label for="roleType" class="kn-material-input-label"> {{ $t('managers.rolesManagement.detail.roleType') }} * </label>
+                      </span>
+
+                      <span class="p-float-label">
+                        <Checkbox id="isPublic"/>
+                        <label for="isPublic">{{ $t('managers.rolesManagement.detail.isPublic') }}</label>
                       </span>
                     </div>
                   </form>
@@ -145,7 +133,7 @@
             </TabPanel>
             <TabPanel>
               <template #header>
-                <span>AUTHORIZATIONS</span>
+                <span>{{ $t('managers.rolesManagement.authorizations') }}</span>
               </template>
 
               <Card :style="rolesManagementTabViewDescriptor.card.style">
@@ -309,6 +297,7 @@ import Card from 'primevue/card';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import Dropdown from 'primevue/dropdown';
+import Checkbox from 'primevue/checkbox';
 
 export default defineComponent({
   name: 'roles-management',
@@ -319,7 +308,8 @@ export default defineComponent({
     Card,
     TabView,
     TabPanel,
-    Dropdown
+    Dropdown,
+    Checkbox
   },
   data() {
     return {
@@ -340,6 +330,7 @@ export default defineComponent({
       selectedBusinessModels: [],
       selectedDataSets: [],
       selectedKPICategories: [],
+      selectedRole: {},
       roleMetaModelCategories: [] as any[] // ovo posle ide u objekat za formu
     };
   },

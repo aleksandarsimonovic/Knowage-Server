@@ -124,7 +124,16 @@
 			"categories": "Categories",
 			"dataSets": "Data sets",
 			"kpiCategories": "KPI Categories",
-			"title": "Roles Management"
+			"title": "Roles Management",
+			"authorizations": "Authorizations",
+			"detail": {
+				"title": "Detail",
+				"name": "Name",
+				"code": "Code",
+				"description": "Description",
+				"roleType": "Role Type",
+				"isPublic": "Is public role?"
+			}
 		},
 		"usersManagement": {
 			"title": "Users list",
