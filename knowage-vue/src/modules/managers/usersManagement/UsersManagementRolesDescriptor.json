@@ -1,0 +1,23 @@
+{
+  "columns": [
+    { "field": "name", "header": "Name" },
+    { "field": "description", "header": "Value" }
+  ],
+  "table": {
+    "column": {
+      "style": {
+        "width": "18%"
+      }
+    },
+    "iconColumn": {
+      "style": {
+        "text-align": "end"
+      }
+    }
+  },
+  "form": {
+    "style": {
+      "width": "60vw"
+    }
+  }
+}
