@@ -229,7 +229,6 @@ export default defineComponent({
           required,
         },
         valueCheck: {
-          required,
           maximumCharacters: maxLength(1000),
           regex
         },
