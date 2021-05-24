@@ -9,25 +9,25 @@ import Toolbar from 'primevue/toolbar';
 
 const mockedMetadata = [
   {
-    id: 1,
+    objMetaId: 1,
     label: 'metadata1',
     name: 'name1',
     description: 'description1',
-    dataType: 'SHORT_TEXT'
+    dataTypeCode: 'SHORT_TEXT'
   },
   {
-    id: 2,
+    objMetaId: 2,
     label: 'metadata2',
     name: 'name2',
     description: 'description2',
-    dataType: 'SHORT_TEXT'
+    dataTypeCode: 'SHORT_TEXT'
   },
   {
-    id: 5,
+    objMetaId: 5,
     label: 'metadata3',
     name: 'name3',
     description: 'description3',
-    dataType: 'FILE'
+    dataTypeCode: 'FILE'
   }
 ];
 
@@ -118,29 +118,21 @@ describe('Metadata Management', () => {
     expect(wrapper.find('[data-test="metadata-form"]').exists()).toBe(true);
   });
 
-  // TOASK no child routes WRONG API
-  xit('changes url with clicked row id when a row is clicked', () => {});
+  it('shows selects correct metadata object when clicked row data', async () => {
+    const wrapper = factory();
+    await flushPromises();
+    const dataTable = wrapper.find('[data-test="metadata-table"]');
+    await dataTable.find('tr td').trigger('click');
 
-  // split into two
-  xit('shows filled inputs card with clicked row data', async () => {
-
+    expect(wrapper.vm.formVisible).toBe(true);
+    expect(wrapper.vm.selectedMetadata).toStrictEqual({
+      id: 1,
+      label: 'metadata1',
+      name: 'name1',
+      description: 'description1',
+      dataType: 'SHORT_TEXT'
+    });
   });
-
-   it('shows selects correct metadata object when clicked row data', async () => {
-     const wrapper = factory();
-     await flushPromises();
-     const dataTable = wrapper.find('[data-test="metadata-table"]');
-     await dataTable.find('tr td').trigger('click');
-
-     expect(wrapper.vm.formVisible).toBe(true);
-     expect(wrapper.vm.selectedMetadata).toStrictEqual({
-       id: 1,
-       label: 'metadata1',
-       name: 'name1',
-       description: 'description1',
-       dataType: 'SHORT_TEXT'
-     });
-   });
 });
 
 describe('Metadata Management Search', () => {

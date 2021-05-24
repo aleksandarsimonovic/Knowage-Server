@@ -28,9 +28,9 @@
           @change="setDirty"
           data-test="label-input"
         />
-        <label for="label" class="kn-material-input-label">{{
-          $t('common.label')
-        }}</label>
+        <label for="label" class="kn-material-input-label"
+          >{{ $t('common.label') }} *
+        </label>
       </span>
 
       <KnValidationMessages
@@ -56,9 +56,9 @@
           @change="setDirty"
           data-test="name-input"
         />
-        <label for="name" class="kn-material-input-label">{{
-          $t('common.name')
-        }}</label>
+        <label for="name" class="kn-material-input-label"
+          >{{ $t('common.name') }} *
+        </label>
       </span>
 
       <KnValidationMessages
@@ -116,9 +116,9 @@
           @change="setDirty"
           data-test="dataType-dropdown"
         />
-        <label for="dataType" class="kn-material-input-label">{{
-          $t('common.type')
-        }}</label>
+        <label for="dataType" class="kn-material-input-label"
+          >{{ $t('common.type') }} *
+        </label>
       </span>
 
       <KnValidationMessages
@@ -220,13 +220,8 @@ export default defineComponent({
         return;
       }
 
-      // TODO WRONG API
-      if (this.metadata.objMetaId) {
+      if (this.metadata.id) {
         this.operation = 'update';
-        this.metadata.id = this.metadata.objMetaId;
-        delete this.metadata.objMetaId;
-        delete this.metadata.dataTypeCode;
-        delete this.metadata.creationDate;
       }
 
       await axios

@@ -24,7 +24,7 @@
           <DataTable
             :value="metadataList"
             :paginator="true"
-            :rows="10"
+            :rows="20"
             class="p-datatable-sm kn-table"
             dataKey="id"
             v-model:filters="filters"
@@ -114,7 +114,7 @@
 import { defineComponent } from 'vue';
 import { iMetadata } from './Metadata';
 import { FilterOperator } from 'primevue/api';
-import {filterDefault} from '@/helpers/commons/filterHelper'
+import { filterDefault } from '@/helpers/commons/filterHelper';
 import axios from 'axios';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -142,7 +142,7 @@ export default defineComponent({
           operator: FilterOperator.AND,
           constraints: [filterDefault]
         },
-        type: {
+        dataType: {
           operator: FilterOperator.AND,
           constraints: [filterDefault]
         }
@@ -159,10 +159,20 @@ export default defineComponent({
   methods: {
     async loadAllMetadata() {
       this.loading = true;
+      this.metadataList = [];
       await axios
-        // .get('http://localhost:3000/knowage-vue/data/metadata.json')
         .get(process.env.VUE_APP_RESTFUL_SERVICES_PATH + '2.0/objMetadata')
-        .then(response => (this.metadataList = response.data))
+        .then(response =>
+          response.data.map((metadata: any) => {
+            this.metadataList.push({
+              id: metadata.objMetaId,
+              label: metadata.label,
+              name: metadata.name,
+              description: metadata.description,
+              dataType: metadata.dataTypeCode
+            });
+          })
+        )
         .finally(() => (this.loading = false));
     },
     showForm(event: any) {
@@ -170,9 +180,8 @@ export default defineComponent({
         this.setSelectedMetadata(event);
       } else {
         this.$confirm.require({
-          // TOASK translation
           message: this.$t('managers.metadata.confirmUnsavedChangesMessage'),
-          header: this.$t('managers.metadata;unsavedChangesHeader'),
+          header: this.$t('managers.metadata.unsavedChangesHeader'),
           icon: 'pi pi-exclamation-triangle',
           accept: () => {
             this.touched = false;
@@ -208,6 +217,7 @@ export default defineComponent({
       this.formVisible = false;
     },
     reloadMetadata() {
+      this.touched = false;
       this.formVisible = false;
       this.loadAllMetadata();
     },
@@ -215,7 +225,6 @@ export default defineComponent({
       if (event) {
         this.selectedMetadata = event.data;
       }
-
       this.formVisible = true;
     }
   }
