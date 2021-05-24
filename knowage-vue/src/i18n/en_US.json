@@ -133,6 +133,10 @@
 				"description": "Description",
 				"roleType": "Role Type",
 				"isPublic": "Is public role?"
+			},
+			"table": {
+				"name": "Name",
+				"description": "Description"
 			}
 		},
 		"usersManagement": {
