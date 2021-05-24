@@ -89,9 +89,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			}
 		}
 		
-		var replacePlaceholders = function(text, data){
+		var replacePlaceholders = function(text, data, skipAdapting){
 			function adaptToType(value) {
-				return isNaN(value) ? '"'+value+'"' : value;
+				if(skipAdapting) return value;
+				else return isNaN(value) ? '"'+value+'"' : value;
 			}
 			// variables
 			text = text.replace(/\$V\{([a-zA-Z0-9\_\-\.]+)\}/g, function(match,variable){
@@ -103,7 +104,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			});
 			// parameters
 			text = text.replace(/\$P\{([a-zA-Z0-9\_\-\.]+)\}/g, function(match,parameter){
-				return adaptToType(cockpitModule_analyticalDrivers[parameter]);
+				var parameterKey = cockpitModule_analyticalDrivers[parameter+'_description'] ? parameter+'_description' : parameter;
+				return adaptToType(cockpitModule_analyticalDrivers[parameterKey]);
 			});
 			return text;
 		}
@@ -143,7 +145,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						var tempCol = {"headerName":$scope.ngModel.content.columnSelectedOfDataset[c].aliasToShow || $scope.ngModel.content.columnSelectedOfDataset[c].alias,
 								"field":fields[f].name,"measure":$scope.ngModel.content.columnSelectedOfDataset[c].fieldType};
 						if($scope.ngModel.content.columnSelectedOfDataset[c].style && $scope.ngModel.content.columnSelectedOfDataset[c].style.enableCustomHeaderTooltip){
-							tempCol.headerTooltip = replacePlaceholders($scope.ngModel.content.columnSelectedOfDataset[c].style.customHeaderTooltip);
+							tempCol.headerTooltip = replacePlaceholders($scope.ngModel.content.columnSelectedOfDataset[c].style.customHeaderTooltip, null, true);
 						}else{
 							tempCol.headerTooltip = $scope.ngModel.content.columnSelectedOfDataset[c].aliasToShow || $scope.ngModel.content.columnSelectedOfDataset[c].alias;
 						}
@@ -713,7 +715,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						if(threshold.compareValueKey) valueToCompare = cockpitModule_properties.VARIABLES[threshold.compareValue][threshold.compareValueKey];
 						else valueToCompare = cockpitModule_properties.VARIABLES[threshold.compareValue];
 					}
-					if(threshold.compareValueType == 'parameter') valueToCompare = cockpitModule_analyticalDrivers[threshold.compareValue];
+					if(threshold.compareValueType == 'parameter') {
+						var parameterKey = cockpitModule_analyticalDrivers[threshold.compareValue+'_description'] ? threshold.compareValue+'_description' : threshold.compareValue;
+						valueToCompare = cockpitModule_analyticalDrivers[parameterKey];
+					}
 					
 					// getting the condition to compare with and comparing
 					var fullfilledCondition = false;
