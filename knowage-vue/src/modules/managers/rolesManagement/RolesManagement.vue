@@ -24,12 +24,11 @@
                 class="p-datatable-sm kn-table"
                 dataKey="id"
                 responsiveLayout="scroll"
+                selectionMode="single"
                 v-model:filters="filters"
                 filterDisplay="menu"
                 :globalFilterFields="rolesDecriptor.globalFilterFields"
-                v-model:selection="selectedRole"
-                selectionMode="single"
-                @rowSelect="showForm($event)"
+                @rowClick="showForm($event)"
               >
                 <template #header>
                   <div class="table-header">
@@ -60,12 +59,16 @@
                   header="Description"
                   :sortable="true"
                 ></Column>
-                <!-- OVO DUGME SJEBE CSS LEVE STRANE -->
-                <!-- <Column>
-                  <template #body>
-                    <Button icon="pi pi-trash" class="p-button-link" />
+                <Column field="id">
+                  <template #body="slotProps">
+                    <Button
+                      icon="pi pi-trash"
+                      class="p-button-link"
+                      @click="deleteRoleConfirm(slotProps.data.id)"
+                      :data-test="'delete-button'"
+                    />
                   </template>
-                </Column> -->
+                </Column>
               </DataTable>
             </div>
           </div>
@@ -102,6 +105,7 @@
                           v-model.trim="v$.selectedRole.name.$model" 
                           :class="{'p-invalid': v$.selectedRole.name.$invalid && v$.selectedRole.name.$dirty}"
                           @blur="v$.selectedRole.name.$touch()"
+                          @change="setDirty"
                         />
                         <label for="name" class="kn-material-input-label"> {{ $t('managers.rolesManagement.detail.name') }} * </label>
                       </span>
@@ -120,6 +124,7 @@
                           v-model.trim="v$.selectedRole.code.$model" 
                           :class="{'p-invalid': v$.selectedRole.code.$invalid && v$.selectedRole.code.$dirty}"
                           @blur="v$.selectedRole.code.$touch()"
+                          @change="setDirty"
                         />
                         <label for="code" class="kn-material-input-label"> {{ $t('managers.rolesManagement.detail.code') }} </label>
                       </span>
@@ -139,6 +144,7 @@
                           v-model.trim="v$.selectedRole.description.$model" 
                           :class="{'p-invalid': v$.selectedRole.description.$invalid && v$.selectedRole.description.$dirty}"
                           @blur="v$.selectedRole.description.$touch()"
+                          @change="setDirty"
                         />
                         <label for="description" class="kn-material-input-label"> {{ $t('managers.rolesManagement.detail.description') }} </label>
                       </span>
@@ -160,6 +166,7 @@
                           v-model.trim="v$.selectedRole.roleType.$model" 
                           :class="{'p-invalid': v$.selectedRole.roleType.$invalid && v$.selectedRole.roleType.$dirty}"
                           @before-show="v$.selectedRole.roleType.$touch()"
+                          @change="setDirty"
                         />
                         <label for="roleType" class="kn-material-input-label"> {{ $t('managers.rolesManagement.detail.roleType') }} * </label>
                       </span>
@@ -230,7 +237,11 @@
                       headerClass="column-header"
                       :style="rolesManagementTabViewDescriptor.column.style"
                     ></Column>
-                    <Column field="VALUE_NM" header="Name"></Column>
+                    <Column
+                      field="VALUE_NM"
+                      header="Name"
+                      headerClass="column-header"
+                    ></Column>
                   </DataTable>
                 </template>
               </Card>
@@ -273,9 +284,16 @@
                     </template>
                     <Column
                       selectionMode="multiple"
+                      header="Select All"
+                      headerClass="column-header"
                       :style="rolesManagementTabViewDescriptor.column.style"
                     ></Column>
-                    <Column field="VALUE_NM" header="Name"> </Column>
+                    <Column
+                      field="VALUE_NM"
+                      header="Name"
+                      headerClass="column-header"
+                    >
+                    </Column>
                   </DataTable>
                 </template>
               </Card>
@@ -313,14 +331,20 @@
                       {{ $t('common.info.noDataFound') }}
                     </template>
                     <template #loading v-if="loading">
-                      test
                       {{ $t('common.info.dataLoading') }}
                     </template>
                     <Column
                       selectionMode="multiple"
+                      header="Select All"
+                      headerClass="column-header"
                       :style="rolesManagementTabViewDescriptor.column.style"
                     ></Column>
-                    <Column field="VALUE_NM" header="Name"> </Column>
+                    <Column
+                      field="VALUE_NM"
+                      header="Name"
+                      headerClass="column-header"
+                    >
+                    </Column>
                   </DataTable>
                 </template>
               </Card>
@@ -372,14 +396,13 @@ export default defineComponent({
   data() {
     return {
       roles: [] as iRoles[],
-      selectedRole: {},
-      v$: useValidate() as any,
       roleTypes: [],
       authorizationList: [],
       businessModelList: [],
       dataSetList: [],
       kpiCategoriesList: [],
       loading: false,
+      touched: false,
       rolesDecriptor: rolesDecriptor,
       rolesManagementTabViewDescriptor: rolesManagementTabViewDescriptor,
       columns: rolesDecriptor.columns,
@@ -390,7 +413,10 @@ export default defineComponent({
       selectedBusinessModels: [],
       selectedDataSets: [],
       selectedKPICategories: [],
-      roleMetaModelCategories: [] as any[], // ovo posle ide u objekat za formu
+      selectedRole: {} as any,
+      roleMetaModelCategories: [] as any[],
+      selectedCategories: [] as any[],
+      v$: useValidate() as any,
       dirty: false,
     };
   },
@@ -420,7 +446,6 @@ export default defineComponent({
     await this.loadAllRoles();
     await this.loadAuthorizations();
     await this.loadAllDomainsData();
-    console.log(this.businessModelList);
   },
   methods: {
     async loadAllRoles() {
@@ -464,41 +489,90 @@ export default defineComponent({
         .finally(() => (this.loading = false));
     },
     handleSubmit() {
-      this.roleMetaModelCategories = [];
-      console.log(this.selectedBusinessModels);
+      this.selectedRole.roleMetaModelCategories = [];
+
       this.selectedBusinessModels.map((element: any) => {
-        this.roleMetaModelCategories.push({
+        this.selectedRole.roleMetaModelCategories.push({
           categoryId: element.VALUE_ID
         });
       });
       this.selectedDataSets.map((element: any) => {
-        this.roleMetaModelCategories.push({
+        this.selectedRole.roleMetaModelCategories.push({
           categoryId: element.VALUE_ID
         });
       });
       this.selectedKPICategories.map((element: any) => {
-        this.roleMetaModelCategories.push({
+        this.selectedRole.roleMetaModelCategories.push({
           categoryId: element.VALUE_ID
         });
       });
-
-      console.log(this.roleMetaModelCategories);
     },
     showForm(event: any) {
-      if (event) {
-        this.selectedRole = event.data;
+      if (!this.touched) {
+        this.setSelectedRole(event);
+      } else {
+        this.$confirm.require({
+          message: this.$t('managers.metadata.confirmUnsavedChangesMessage'),
+          header: this.$t('managers.metadata.unsavedChangesHeader'),
+          icon: 'pi pi-exclamation-triangle',
+          accept: () => {
+            this.touched = false;
+            this.setSelectedRole(event);
+          }
+        });
       }
-      console.log(this.selectedRole);
+    },
+    async setSelectedRole(event: any) {
+      if (event) {
+        this.selectedRole = { ...event.data };
+
+        await this.loadCategories(this.selectedRole.id).then(response => {
+          response.data.map((element: any) => {
+            this.roleMetaModelCategories.push({
+              categoryId: element.categoryId
+            });
+          });
+        });
+      }
+    },
+    loadCategories(id: number) {
+      return axios
+        .get(
+          process.env.VUE_APP_RESTFUL_SERVICES_PATH +
+            `2.0/roles/categories/${id}`
+        )
+        .finally(() => (this.loading = false));
+    },
+    deleteRoleConfirm(roleId: number) {
+      this.$confirm.require({
+        message: this.$t('common.toast.deleteMessage'),
+        header: this.$t('common.toast.deleteTitle'),
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => this.deleteRole(roleId)
+      });
+    },
+    async deleteRole(roleId: number) {
+      await axios
+        .delete(
+          process.env.VUE_APP_RESTFUL_SERVICES_PATH + '2.0/roles/' + roleId
+        )
+        .then(() => {
+          this.$store.commit('setInfo', {
+            title: this.$t('common.toast.deleteTitle'),
+            msg: this.$t('common.toast.deleteSuccess')
+          });
+          this.loadAllRoles();
+        });
+    },
+    setDirty() {
+      this.touched = true;
     }
   }
 });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .column-header {
-  &:deep(.p-column-header-content) {
-    display: 'flex';
-    flex-direction: 'column';
-  }
+  color: $color-primary !important;
 }
 </style>
