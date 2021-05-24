@@ -140,7 +140,7 @@
         ></KnValidationMessages>
       </div>
 
-      <h5>Is active?</h5>
+      <h5>Is active? *</h5>
       <div class="p-field" :style="configurationManagementDescriptor.pField.style">
         <span class="p-float-label">
           <SelectButton v-model="v$.configuration.active.$model" :options="options" />
