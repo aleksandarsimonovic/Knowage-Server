@@ -95,45 +95,59 @@
               <Card :style="rolesManagementTabViewDescriptor.card.style">
                 <template #content>
                   <form class="p-fluid p-m-5">
-                    
                     <div class="p-field" :style="rolesDecriptor.pField.style">
                       <span class="p-float-label">
-                        <InputText 
-                          id="name" 
-                          class="kn-material-input" 
-                          type="text" 
-                          v-model.trim="v$.selectedRole.name.$model" 
-                          :class="{'p-invalid': v$.selectedRole.name.$invalid && v$.selectedRole.name.$dirty}"
+                        <InputText
+                          id="name"
+                          class="kn-material-input"
+                          type="text"
+                          v-model.trim="v$.selectedRole.name.$model"
+                          :class="{
+                            'p-invalid':
+                              v$.selectedRole.name.$invalid &&
+                              v$.selectedRole.name.$dirty
+                          }"
                           @blur="v$.selectedRole.name.$touch()"
                           @change="setDirty"
                         />
-                        <label for="name" class="kn-material-input-label"> {{ $t('managers.rolesManagement.detail.name') }} * </label>
+                        <label for="name" class="kn-material-input-label">
+                          {{ $t('managers.rolesManagement.detail.name') }} *
+                        </label>
                       </span>
-                      <KnValidationMessages 
+                      <KnValidationMessages
                         :vComp="v$.selectedRole.name"
-                        :additionalTranslateParams="{ fieldName: $t('managers.rolesManagement.detail.name') }"
+                        :additionalTranslateParams="{
+                          fieldName: $t('managers.rolesManagement.detail.name')
+                        }"
                       />
                     </div>
 
                     <div class="p-field" :style="rolesDecriptor.pField.style">
                       <span class="p-float-label">
-                        <InputText 
-                          id="code" 
-                          class="kn-material-input" 
-                          type="text" 
-                          v-model.trim="v$.selectedRole.code.$model" 
-                          :class="{'p-invalid': v$.selectedRole.code.$invalid && v$.selectedRole.code.$dirty}"
+                        <InputText
+                          id="code"
+                          class="kn-material-input"
+                          type="text"
+                          v-model.trim="v$.selectedRole.code.$model"
+                          :class="{
+                            'p-invalid':
+                              v$.selectedRole.code.$invalid &&
+                              v$.selectedRole.code.$dirty
+                          }"
                           @blur="v$.selectedRole.code.$touch()"
                           @change="setDirty"
                         />
-                        <label for="code" class="kn-material-input-label"> {{ $t('managers.rolesManagement.detail.code') }} </label>
+                        <label for="code" class="kn-material-input-label">
+                          {{ $t('managers.rolesManagement.detail.code') }}
+                        </label>
                       </span>
-                      <KnValidationMessages 
+                      <KnValidationMessages
                         :vComp="v$.selectedRole.code"
-                        :additionalTranslateParams="{ fieldName: $t('managers.rolesManagement.detail.code') }"
+                        :additionalTranslateParams="{
+                          fieldName: $t('managers.rolesManagement.detail.code')
+                        }"
                       />
                     </div>
-                      
 
                     <div class="p-field" :style="rolesDecriptor.pField.style">
                       <span class="p-float-label">
@@ -141,16 +155,31 @@
                           id="description"
                           class="kn-material-input"
                           type="text"
-                          v-model.trim="v$.selectedRole.description.$model" 
-                          :class="{'p-invalid': v$.selectedRole.description.$invalid && v$.selectedRole.description.$dirty}"
+                          v-model.trim="v$.selectedRole.description.$model"
+                          :class="{
+                            'p-invalid':
+                              v$.selectedRole.description.$invalid &&
+                              v$.selectedRole.description.$dirty
+                          }"
                           @blur="v$.selectedRole.description.$touch()"
                           @change="setDirty"
                         />
-                        <label for="description" class="kn-material-input-label"> {{ $t('managers.rolesManagement.detail.description') }} </label>
+                        <label
+                          for="description"
+                          class="kn-material-input-label"
+                        >
+                          {{
+                            $t('managers.rolesManagement.detail.description')
+                          }}
+                        </label>
                       </span>
-                      <KnValidationMessages 
+                      <KnValidationMessages
                         :vComp="v$.selectedRole.description"
-                        :additionalTranslateParams="{ fieldName: $t('managers.rolesManagement.detail.description') }"
+                        :additionalTranslateParams="{
+                          fieldName: $t(
+                            'managers.rolesManagement.detail.description'
+                          )
+                        }"
                       />
                     </div>
 
@@ -163,23 +192,35 @@
                           :options="roleTypes"
                           optionLabel="VALUE_CD"
                           optionValue="VALUE_CD"
-                          v-model.trim="v$.selectedRole.roleType.$model" 
-                          :class="{'p-invalid': v$.selectedRole.roleType.$invalid && v$.selectedRole.roleType.$dirty}"
+                          v-model.trim="v$.selectedRole.roleType.$model"
+                          :class="{
+                            'p-invalid':
+                              v$.selectedRole.roleType.$invalid &&
+                              v$.selectedRole.roleType.$dirty
+                          }"
                           @before-show="v$.selectedRole.roleType.$touch()"
                           @change="setDirty"
                         />
-                        <label for="roleType" class="kn-material-input-label"> {{ $t('managers.rolesManagement.detail.roleType') }} * </label>
+                        <label for="roleType" class="kn-material-input-label">
+                          {{ $t('managers.rolesManagement.detail.roleType') }} *
+                        </label>
                       </span>
-                      <KnValidationMessages 
+                      <KnValidationMessages
                         :vComp="v$.selectedRole.roleType"
-                        :additionalTranslateParams="{ fieldName: $t('managers.rolesManagement.detail.roleType') }"
+                        :additionalTranslateParams="{
+                          fieldName: $t(
+                            'managers.rolesManagement.detail.roleType'
+                          )
+                        }"
                       />
                     </div>
 
                     <div class="p-field" :style="rolesDecriptor.pField.style">
                       <span class="p-float-label">
-                        <Checkbox id="isPublic"/>
-                        <label for="isPublic">{{ $t('managers.rolesManagement.detail.isPublic') }}</label>
+                        <Checkbox id="isPublic" />
+                        <label for="isPublic">{{
+                          $t('managers.rolesManagement.detail.isPublic')
+                        }}</label>
                       </span>
                     
                     </div>
@@ -360,11 +401,11 @@
 import { defineComponent } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import { iRoles } from './RolesManagement';
-import { required, maxLength } from "@vuelidate/validators";
-import { extendedAlphanumeric } from "@/helpers/commons/regexHelper";
+import { required, maxLength } from '@vuelidate/validators';
+import { extendedAlphanumeric } from '@/helpers/commons/regexHelper';
 import KnValidationMessages from '@/components/UI/KnValidatonMessages.vue';
 import axios from 'axios';
-import useValidate from "@vuelidate/core";
+import useValidate from '@vuelidate/core';
 import rolesDecriptor from './RolesManagementDescriptor.json';
 import rolesManagementTabViewDescriptor from './RolesManagementTabViewDescriptor.json';
 import FabButton from '@/components/UI/KnFabButton.vue';
@@ -417,7 +458,7 @@ export default defineComponent({
       roleMetaModelCategories: [] as any[],
       selectedCategories: [] as any[],
       v$: useValidate() as any,
-      dirty: false,
+      dirty: false
     };
   },
   validations() {
@@ -437,9 +478,9 @@ export default defineComponent({
           regex
         },
         roleType: {
-          required,
+          required
         }
-      },
+      }
     };
   },
   async created() {
