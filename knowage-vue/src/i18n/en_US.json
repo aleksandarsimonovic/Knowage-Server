@@ -131,12 +131,19 @@
 				"name": "Name",
 				"code": "Code",
 				"description": "Description",
-				"roleType": "Role Type",
+				"roleTypeID": "Role Type",
 				"isPublic": "Is public role?"
 			},
 			"table": {
 				"name": "Name",
 				"description": "Description"
+			},
+			"rolesDropdown": {
+				"ADMIN": "Administrator",
+				"USER": "User",
+				"TEST_ROLE": "Test User",
+				"MODEL_ADMIN": "Model Administrator",
+				"DEV_ROLE": "Developer"
 			}
 		},
 		"usersManagement": {

@@ -9,27 +9,5 @@
       "header": "Description"
     }
   ],
-  "globalFilterFields": ["name", "description"],
-  "roleType": [
-    {
-      "name": "User",
-      "value": "user"
-    },
-    {
-      "name": "Administrator",
-      "value": "administrator"
-    },
-    {
-      "name": "Developer",
-      "value": "developer"
-    },
-    {
-      "name": "Test User",
-      "value": "testUser"
-    },
-    {
-      "name": "Model Administrator",
-      "value": "modelAdministrator"
-    }
-  ]
+  "globalFilterFields": ["name", "description"]
 }

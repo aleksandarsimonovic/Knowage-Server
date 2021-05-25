@@ -115,48 +115,34 @@
                 />
               </div>
 
-              <!-- Problem sa dropdownom, kako selektovati izbor -->
-              <div
-                class="p-field"
-                :style="rolesManagementTabViewDescriptor.pField.style"
-              >
+              <div class="p-field" :style="rolesManagementTabViewDescriptor.pField.style">
                 <span class="p-float-label">
                   <Dropdown
-                    id="roleType"
+                    id="roleTypeID"
                     class="kn-material-input"
                     :options="roleTypes"
                     optionLabel="VALUE_CD"
-                    optionValue="VALUE_CD"
-                    v-model.trim="v$.selectedRole.roleType.$model"
-                    :class="{
-                      'p-invalid':
-                        v$.selectedRole.roleType.$invalid &&
-                        v$.selectedRole.roleType.$dirty,
-                    }"
-                    @before-show="v$.selectedRole.roleType.$touch()"
+                    optionValue="VALUE_ID"
+                    v-model.trim="v$.selectedRole.roleTypeID.$model"
+                    :class="{'p-invalid':v$.selectedRole.roleTypeID.$invalid && v$.selectedRole.roleTypeID.$dirty}"
+                    @before-show="v$.selectedRole.roleTypeID.$touch()"
                     @change="setDirty"
-                  />
-                  <label for="roleType" class="kn-material-input-label">
-                    {{ $t("managers.rolesManagement.detail.roleType") }} *
+                  >
+                    <template #option="slotProps">
+                      <div> {{ $t(`managers.rolesManagement.rolesDropdown.${slotProps.option.VALUE_CD}`) }} </div>
+                    </template>
+                  </Dropdown>
+                  <label for="roleTypeID" class="kn-material-input-label">
+                    {{ $t("managers.rolesManagement.detail.roleTypeID") }} *
                   </label>
                 </span>
-                <KnValidationMessages
-                  :vComp="v$.selectedRole.roleType"
-                  :additionalTranslateParams="{
-                    fieldName: $t('managers.rolesManagement.detail.roleType'),
-                  }"
-                />
+                <KnValidationMessages :vComp="v$.selectedRole.roleTypeID" :additionalTranslateParams="{fieldName: $t('managers.rolesManagement.detail.roleTypeID')}"/>
               </div>
 
-              <div
-                class="p-field"
-                :style="rolesManagementTabViewDescriptor.pField.style"
-              >
-                <span class="p-float-label">
-                  <Checkbox id="isPublic" />
-                  <label for="isPublic">{{
-                    $t("managers.rolesManagement.detail.isPublic")
-                  }}</label>
+              <div class="p-field" :style="rolesManagementTabViewDescriptor.pField.style">
+                <span class="p-field-checkbox">
+                  <Checkbox id="isPublic" name="isPublic" v-model="selectedRole.isPublic" :binary="true"/>
+                  <label for="isPublic"> {{ $t("managers.rolesManagement.detail.isPublic") }} </label>
                 </span>
               </div>
             </form>
@@ -406,7 +392,7 @@ export default defineComponent({
           maximumCharacters: maxLength(225),
           regex,
         },
-        roleType: {
+        roleTypeID: {
           required,
         },
       },
