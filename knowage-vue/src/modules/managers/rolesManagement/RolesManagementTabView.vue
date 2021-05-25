@@ -1,7 +1,11 @@
 <template>
   <Toolbar class="kn-toolbar kn-toolbar--primary">
     <template #right>
-      <Button @click="handleSubmit" class="kn-button p-button-text">
+      <Button
+        @click="handleSubmit"
+        class="kn-button p-button-text"
+        :disabled="buttonDisabled"
+      >
         {{ $t("common.save") }}
       </Button>
       <Button class="kn-button p-button-text" @click="closeTemplate">
@@ -191,11 +195,13 @@
               :value="businessModelList"
               v-model:selection="selectedBusinessModels"
               class="p-datatable-sm kn-table"
-              dataKey="VALUE_ID"
+              dataKey="categoryId"
               :paginator="true"
               :rows="20"
               responsiveLayout="stack"
               breakpoint="960px"
+              @rowSelect="setDirty"
+              @rowUnselect="setDirty"
             >
               <template #empty>
                 {{ $t("common.info.noDataFound") }}
@@ -210,7 +216,7 @@
                 :style="rolesManagementTabViewDescriptor.column.style"
               ></Column>
               <Column
-                field="VALUE_NM"
+                field="categoryName"
                 header="Name"
                 headerClass="column-header"
               ></Column>
@@ -241,11 +247,13 @@
               :value="dataSetList"
               v-model:selection="selectedDataSets"
               class="p-datatable-sm kn-table"
-              dataKey="VALUE_ID"
+              dataKey="categoryId"
               :paginator="true"
               :rows="20"
               responsiveLayout="stack"
               breakpoint="960px"
+              @rowSelect="setDirty"
+              @rowUnselect="setDirty"
             >
               <template #empty>
                 {{ $t("common.info.noDataFound") }}
@@ -261,7 +269,7 @@
                 :style="rolesManagementTabViewDescriptor.column.style"
               ></Column>
               <Column
-                field="VALUE_NM"
+                field="categoryName"
                 header="Name"
                 headerClass="column-header"
               >
@@ -293,11 +301,13 @@
               :value="kpiCategoriesList"
               v-model:selection="selectedKPICategories"
               class="p-datatable-sm kn-table"
-              dataKey="VALUE_ID"
+              dataKey="categoryId"
               :paginator="true"
               :rows="20"
               responsiveLayout="stack"
               breakpoint="960px"
+              @rowSelect="setDirty"
+              @rowUnselect="setDirty"
             >
               <template #empty>
                 {{ $t("common.info.noDataFound") }}
@@ -312,7 +322,7 @@
                 :style="rolesManagementTabViewDescriptor.column.style"
               ></Column>
               <Column
-                field="VALUE_NM"
+                field="categoryName"
                 header="Name"
                 headerClass="column-header"
               >
@@ -366,16 +376,16 @@ export default defineComponent({
     return {
       rolesManagementTabViewDescriptor: rolesManagementTabViewDescriptor,
       roleTypes: [],
-      selectedBusinessModels: [],
-      selectedDataSets: [],
-      selectedKPICategories: [],
+      selectedBusinessModels: [] as any[], // praviti interfejs za ovo?!!
+      selectedDataSets: [] as any[],
+      selectedKPICategories: [] as any[],
       selectedRole: {} as any,
       roleMetaModelCategories: [] as any[],
       selectedCategories: [] as any[],
       authorizationList: [],
-      businessModelList: [],
-      dataSetList: [],
-      kpiCategoriesList: [],
+      businessModelList: [] as any[],
+      dataSetList: [] as any[],
+      kpiCategoriesList: [] as any[],
       loading: false,
       v$: useValidate() as any,
     };
@@ -402,35 +412,43 @@ export default defineComponent({
       },
     };
   },
-  async created() {
-    await this.loadSelectedRole();
-    await this.loadAllDomainsData();
-    console.log(this.businessModelList);
+  computed: {
+    buttonDisabled(): any {
+      return this.v$.$invalid;
+    },
   },
   watch: {
-    id() {
-      this.loadSelectedRole();
+    id(value) {
+      value ? this.loadSelectedRole() : (this.selectedRole = {});
+      this.clearSelectedLists();
     },
+  },
+  async created() {
+    await this.loadAllDomainsData();
+    await this.loadSelectedRole();
+    console.log(this.businessModelList);
   },
   methods: {
     handleSubmit() {
       this.selectedRole.roleMetaModelCategories = [];
 
-      this.selectedBusinessModels.map((element: any) => {
+      this.selectedBusinessModels.map((category: any) => {
         this.selectedRole.roleMetaModelCategories.push({
-          categoryId: element.VALUE_ID,
+          categoryId: category.categoryId,
         });
       });
-      this.selectedDataSets.map((element: any) => {
+      this.selectedDataSets.map((category: any) => {
         this.selectedRole.roleMetaModelCategories.push({
-          categoryId: element.VALUE_ID,
+          categoryId: category.categoryId,
         });
       });
-      this.selectedKPICategories.map((element: any) => {
+      this.selectedKPICategories.map((category: any) => {
         this.selectedRole.roleMetaModelCategories.push({
-          categoryId: element.VALUE_ID,
+          categoryId: category.categoryId,
         });
       });
+
+      console.log(this.selectedRole.roleMetaModelCategories);
     },
     loadCategories(id: string) {
       return axios
@@ -453,13 +471,28 @@ export default defineComponent({
         this.roleTypes = response.data;
       });
       await this.loadDomains("BM_CATEGORY").then((response) => {
-        this.businessModelList = response.data;
+        response.data.map((category: any) => {
+          this.businessModelList.push({
+            categoryId: category.VALUE_ID,
+            categoryName: category.VALUE_NM,
+          });
+        });
       });
       await this.loadDomains("CATEGORY_TYPE").then((response) => {
-        this.dataSetList = response.data;
+        response.data.map((category: any) => {
+          this.dataSetList.push({
+            categoryId: category.VALUE_ID,
+            categoryName: category.VALUE_NM,
+          });
+        });
       });
       await this.loadDomains("KPI_KPI_CATEGORY").then((response) => {
-        this.kpiCategoriesList = response.data;
+        response.data.map((category: any) => {
+          this.kpiCategoriesList.push({
+            categoryId: category.VALUE_ID,
+            categoryName: category.VALUE_NM,
+          });
+        });
       });
     },
     async loadSelectedRole() {
@@ -471,10 +504,22 @@ export default defineComponent({
           .then((response) => (this.selectedRole = response.data));
 
         await this.loadCategories(this.id).then((response) => {
-          response.data.map((element: any) => {
-            this.roleMetaModelCategories.push({
-              categoryId: element.categoryId,
-            });
+          this.clearSelectedLists();
+
+          response.data.map((category: any) => {
+            let index = this.indexInList(category, this.businessModelList);
+
+            if (index != -1) {
+              this.selectedBusinessModels.push(this.businessModelList[index]);
+            }
+
+            index = this.indexInList(category, this.dataSetList);
+
+            if (index != -1) {
+              this.selectedDataSets.push(this.dataSetList[index]);
+            }
+
+            this.selectedKPICategories.push(this.selectedKPICategories[index]);
           });
         });
       }
@@ -484,6 +529,16 @@ export default defineComponent({
     },
     closeTemplate() {
       this.$router.push("/roles");
+    },
+    indexInList(category, list) {
+      return list.findIndex((element) => {
+        return element.categoryId === category.categoryId;
+      });
+    },
+    clearSelectedLists() {
+      this.selectedBusinessModels = [];
+      this.selectedDataSets = [];
+      this.selectedKPICategories = [];
     },
   },
 });
