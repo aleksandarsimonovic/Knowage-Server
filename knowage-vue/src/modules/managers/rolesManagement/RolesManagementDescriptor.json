@@ -31,10 +31,5 @@
       "name": "Model Administrator",
       "value": "modelAdministrator"
     }
-  ],
-  "pField": {
-    "style": {
-      "margin-bottom": "40px"
-    }
-  }
+  ]
 }
