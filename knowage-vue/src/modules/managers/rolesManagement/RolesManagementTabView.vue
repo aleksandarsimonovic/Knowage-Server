@@ -252,7 +252,7 @@ export default defineComponent({
             required: false
         }
     },
-    emits: ['touched', 'closed'],
+    emits: ['touched', 'closed', 'inserted'],
     data() {
         return {
             rolesManagementTabViewDescriptor: rolesManagementTabViewDescriptor,
@@ -339,11 +339,17 @@ export default defineComponent({
                 url += this.selectedRole.id
             }
 
+            // FOR TESTING
+            // if (this.operation == 'insert') {
+            //     this.selectedRole.roleTypeCD = 'ADMIN'
+            // }
+
             await axios.post(url, this.selectedRole).then(() => {
                 this.$store.commit('setInfo', {
                     title: this.$t(this.rolesManagementTabViewDescriptor.operation[this.operation].toastTitle),
                     msg: this.$t(this.rolesManagementTabViewDescriptor.operation.success)
                 })
+                this.$emit('inserted')
                 this.$router.replace('/roles')
             })
         },

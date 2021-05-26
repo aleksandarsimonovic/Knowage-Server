@@ -32,7 +32,7 @@
                                     <span>{{ slotProps.option.name }}</span>
                                     <span class="kn-list-item-text-secondary">{{ slotProps.option.description }}</span>
                                 </div>
-                                <Button icon="far fa-trash-alt" class="p-button-link p-button-sm" @click="deleteRoleConfirm(slotProps.option.id)" data-test="delete-button"/>
+                                <Button icon="far fa-trash-alt" class="p-button-link p-button-sm" @click="deleteRoleConfirm(slotProps.option.id)" data-test="delete-button" />
                             </div>
                         </template>
                     </Listbox>
@@ -40,7 +40,7 @@
             </div>
 
             <div class="p-col-8 p-sm-8 p-md-9 p-p-0 p-m-0">
-                <router-view @touched="touched = true" @closed="touched = false" />
+                <router-view @touched="touched = true" @closed="touched = false" @inserted="pageReload" />
             </div>
         </div>
     </div>
@@ -134,8 +134,13 @@ export default defineComponent({
                     title: this.$t('common.toast.deleteTitle'),
                     msg: this.$t('common.toast.deleteSuccess')
                 })
+                this.$router.push('/roles')
                 this.loadAllRoles()
             })
+        },
+        pageReload() {
+            this.touched = false
+            this.loadAllRoles()
         }
     }
 })
