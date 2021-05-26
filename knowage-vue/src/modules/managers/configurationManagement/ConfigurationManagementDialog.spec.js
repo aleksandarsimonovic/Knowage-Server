@@ -39,7 +39,6 @@ describe('Domains Management Dialog', () => {
       label: 'changepwdmodule.number',
       name: 'Number',
       description: 'lalalaladesc',
-      valueCheck: '0123456789',
       category: 'SECURITY',
       active: false
     };

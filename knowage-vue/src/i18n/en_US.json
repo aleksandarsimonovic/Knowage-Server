@@ -129,7 +129,7 @@
 				"name": "Name",
 				"valueCheck": "Value Check",
 				"category": "Category",
-				"active": "Active",
+				"active": "Is active",
 				"description": "Description"
 			}
 		},

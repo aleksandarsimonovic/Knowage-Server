@@ -12,7 +12,6 @@ const mockedConfigurations = [
     valueId: 1,
     label: 'changepwdmodule.number',
     name: 'Number',
-    valueCheck: '0123456789',
     category: 'SECURITY',
     active: false
   },
@@ -20,7 +19,6 @@ const mockedConfigurations = [
     valueId: 2,
     label: 'GIS_LAYER_FILE_MAX_SIZE	',
     name: 'GIS LAYER FILE MAX SIZE	',
-    valueCheck: '20971520',
     category: 'GENERIC_CONFIGURATION',
     active: true
   },
@@ -28,7 +26,6 @@ const mockedConfigurations = [
     valueId: 4,
     label: 'SPAGOBI.DATE-FORMAT.format	',
     name: 'DATE FORMAT',
-    valueCheck: 'dd/MM/yyyy',
     category: 'DATE-FORMAT',
     active: true
   }
@@ -127,7 +124,6 @@ describe('Configuration Management', () => {
       valueId: 1,
       label: 'changepwdmodule.number',
       name: 'Number',
-      valueCheck: '0123456789',
       category: 'SECURITY',
       active: false
     });

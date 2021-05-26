@@ -143,10 +143,6 @@ export default defineComponent({
           operator: FilterOperator.AND,
           constraints: [filterDefault]
         },
-        valueCheck: {
-          operator: FilterOperator.AND,
-          constraints: [filterDefault]
-        },
         category: {
           operator: FilterOperator.AND,
           constraints: [filterDefault]
