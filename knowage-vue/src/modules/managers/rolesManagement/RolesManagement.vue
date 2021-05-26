@@ -7,11 +7,11 @@
                         {{ $t('managers.rolesManagement.title') }}
                     </template>
                     <template #right>
-                        <FabButton icon="fas fa-plus" @click="showForm" />
+                        <FabButton icon="fas fa-plus" @click="showForm" data-test="open-form-button" />
                     </template>
                 </Toolbar>
+                <ProgressBar mode="indeterminate" class="kn-progress-bar" v-if="loading" data-test="progress-bar" />
                 <div class="p-col">
-                    <ProgressBar mode="indeterminate" class="kn-progress-bar" v-if="loading" data-test="progress-bar" />
                     <Listbox
                         v-if="!loading"
                         class="kn-list--column"
@@ -20,18 +20,19 @@
                         :filterPlaceholder="$t('common.search')"
                         optionLabel="name"
                         filterMatchMode="contains"
-                        :filterFields="['name', 'roleTypeCD']"
+                        :filterFields="rolesDecriptor.filterFields"
                         :emptyFilterMessage="$t('managers.rolesManagement.noResults')"
                         @change="showForm"
                         data-test="roles-list"
                     >
+                        <template #empty>{{ $t('common.info.noDataFound') }}</template>
                         <template #option="slotProps">
-                            <div class="kn-list-item">
+                            <div class="kn-list-item" data-test="list-item">
                                 <div class="kn-list-item-text">
                                     <span>{{ slotProps.option.name }}</span>
                                     <span class="kn-list-item-text-secondary">{{ slotProps.option.description }}</span>
                                 </div>
-                                <Button icon="far fa-trash-alt" class="p-button-link p-button-sm" @click="deleteRoleConfirm(slotProps.option.id)" />
+                                <Button icon="far fa-trash-alt" class="p-button-link p-button-sm" @click="deleteRoleConfirm(slotProps.option.id)" data-test="delete-button"/>
                             </div>
                         </template>
                     </Listbox>
@@ -39,7 +40,7 @@
             </div>
 
             <div class="p-col-8 p-sm-8 p-md-9 p-p-0 p-m-0">
-                <router-view @touched="touched = true" />
+                <router-view @touched="touched = true" @closed="touched = false" />
             </div>
         </div>
     </div>
@@ -53,16 +54,12 @@ import axios from 'axios'
 import rolesDecriptor from './RolesManagementDescriptor.json'
 import FabButton from '@/components/UI/KnFabButton.vue'
 import Listbox from 'primevue/listbox'
-// import DataTable from "primevue/datatable";
-// import Column from "primevue/column";
 
 export default defineComponent({
     name: 'roles-management',
     components: {
         FabButton,
         Listbox
-        // DataTable,
-        // Column,
     },
     data() {
         return {
@@ -102,7 +99,7 @@ export default defineComponent({
             await axios
                 .get(process.env.VUE_APP_RESTFUL_SERVICES_PATH + 'authorizations')
                 .then((response) => {
-                    this.authorizationList = response.data
+                    this.authorizationList = response.data.root
                 })
                 .finally(() => (this.loading = false))
         },

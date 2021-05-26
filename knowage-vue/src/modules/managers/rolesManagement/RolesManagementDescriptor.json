@@ -1,13 +1,13 @@
 {
-  "columns": [
-    {
-      "field": "name",
-      "header": "Name"
-    },
-    {
-      "field": "description",
-      "header": "Description"
-    }
-  ],
-  "globalFilterFields": ["name", "description"]
+    "columns": [
+        {
+            "field": "name",
+            "header": "Name"
+        },
+        {
+            "field": "description",
+            "header": "Description"
+        }
+    ],
+    "filterFields": ["name", "roleTypeCD"]
 }
