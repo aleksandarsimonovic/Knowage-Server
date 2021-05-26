@@ -375,6 +375,7 @@ export default defineComponent({
       dataSetList: [] as any[],
       kpiCategoriesList: [] as any[],
       loading: false,
+      operation: "insert",
       v$: useValidate() as any,
     };
   },
@@ -417,7 +418,11 @@ export default defineComponent({
     console.log(this.businessModelList);
   },
   methods: {
-    handleSubmit() {
+    async handleSubmit() {
+      if (this.v$.$invalid) {
+        return;
+      }
+
       this.selectedRole.roleMetaModelCategories = [];
 
       this.selectedBusinessModels.map((category: any) => {
@@ -436,7 +441,21 @@ export default defineComponent({
         });
       });
 
-      console.log(this.selectedRole.roleMetaModelCategories);
+      let url = process.env.VUE_APP_RESTFUL_SERVICES_PATH + "2.0/roles/";
+      if (this.selectedRole.id) {
+        this.operation = "update";
+        url += this.selectedRole.id;
+      }
+
+      await axios.post(url, this.selectedRole).then(() => {
+        this.$store.commit("setInfo", {
+          title: this.$t(
+            this.rolesManagementTabViewDescriptor.operation[this.operation].toastTitle
+          ),
+          msg: this.$t(this.rolesManagementTabViewDescriptor.operation.success),
+        });
+        this.$router.replace('/roles');
+      });
     },
     loadCategories(id: string) {
       return axios
