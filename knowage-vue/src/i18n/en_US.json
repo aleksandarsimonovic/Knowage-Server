@@ -120,6 +120,7 @@
 			"unsavedChangesHeader": "Unsaved changes"
 		},
 		"rolesManagement": {
+			"noResults": "No roles available for the selected filter",
 			"businessModels": "Business models",
 			"categories": "Categories",
 			"dataSets": "Data sets",

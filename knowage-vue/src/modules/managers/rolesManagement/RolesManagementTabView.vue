@@ -1,16 +1,18 @@
 <template>
-  <Toolbar class="kn-toolbar kn-toolbar--primary">
+  <Toolbar class="kn-toolbar kn-toolbar--secondary p-m-0">
+    <template #left> Role: {{ selectedRole.name }} </template>
     <template #right>
       <Button
+        icon="pi pi-save" 
+        class="p-button-text p-button-rounded p-button-plain"
         @click="handleSubmit"
-        class="kn-button p-button-text"
         :disabled="buttonDisabled"
-      >
-        {{ $t("common.save") }}
-      </Button>
-      <Button class="kn-button p-button-text" @click="closeTemplate">
-        {{ $t("common.close") }}
-      </Button>
+      />
+      <Button 
+        icon="pi pi-times" 
+        class="p-button-text p-button-rounded p-button-plain"
+        @click="closeTemplate"
+      />
     </template>
   </Toolbar>
 

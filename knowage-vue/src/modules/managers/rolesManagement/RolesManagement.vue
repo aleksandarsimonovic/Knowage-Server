@@ -17,61 +17,39 @@
             v-if="loading"
             data-test="progress-bar"
           />
-          <div v-if="!loading">
-            <div class="p-col">
-              <DataTable
-                :value="roles"
-                class="p-datatable-sm kn-table"
-                dataKey="id"
-                responsiveLayout="scroll"
-                selectionMode="single"
-                v-model:filters="filters"
-                filterDisplay="menu"
-                :globalFilterFields="rolesDecriptor.globalFilterFields"
-                @rowClick="showForm($event)"
-              >
-                <template #header>
-                  <div class="table-header">
-                    <span class="p-input-icon-left">
-                      <i class="pi pi-search" />
-                      <InputText
-                        class="kn-material-input"
-                        type="text"
-                        v-model="filters['global'].value"
-                        :placeholder="$t('common.search')"
-                        badge="0"
-                      />
-                    </span>
+          <Listbox
+            v-if="!loading"
+            class="kn-list--column"
+            :options="roles"
+            :filter="true"
+            :filterPlaceholder="$t('common.search')"
+            optionLabel="name"
+            filterMatchMode="contains"
+            :filterFields="['name', 'roleTypeCD']"
+            :emptyFilterMessage="$t('managers.rolesManagement.noResults')"
+          >
+            <template #option="slotProps">
+              <!-- Da odradimo ko oni il ne? -->
+              <!-- <router-link
+                class="kn-decoration-none"
+                :to="{ name: 'roles', params: { id: slotProps.option.id } }"
+                exact
+              > -->
+                <div class="kn-list-item">
+                  {{ slotProps.option.id }}
+                  <div class="kn-list-item-text">
+                    <span>{{ slotProps.option.name }}</span>
+                    <span class="kn-list-item-text-secondary">{{ slotProps.option.description }}</span>
                   </div>
-                </template>
-
-                <template #empty>
-                  {{ $t("common.info.noDataFound") }}
-                </template>
-
-                <template #loading v-if="loading">
-                  {{ $t("common.info.dataLoading") }}
-                </template>
-
-                <Column field="name" header="Name" :sortable="true"></Column>
-                <Column
-                  field="description"
-                  header="Description"
-                  :sortable="true"
-                ></Column>
-                <Column field="id">
-                  <template #body="slotProps">
-                    <Button
-                      icon="pi pi-trash"
-                      class="p-button-link"
-                      @click="deleteRoleConfirm(slotProps.data.id)"
-                      :data-test="'delete-button'"
-                    />
-                  </template>
-                </Column>
-              </DataTable>
-            </div>
-          </div>
+                  <Button
+                    icon="far fa-trash-alt"
+                    class="p-button-text p-button-rounded p-button-plain kn-gallery-slotProps.option.type"
+                    @click="deleteRoleConfirm(slotProps.option.id)"
+                  />
+                </div>
+              <!-- </router-link> -->
+            </template>
+          </Listbox>
         </div>
       </div>
 
@@ -89,15 +67,17 @@ import { iRoles } from "./RolesManagement";
 import axios from "axios";
 import rolesDecriptor from "./RolesManagementDescriptor.json";
 import FabButton from "@/components/UI/KnFabButton.vue";
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
+import Listbox from "primevue/listbox";
+// import DataTable from "primevue/datatable";
+// import Column from "primevue/column";
 
 export default defineComponent({
   name: "roles-management",
   components: {
     FabButton,
-    DataTable,
-    Column,
+    Listbox,
+    // DataTable,
+    // Column,
   },
   data() {
     return {
@@ -121,7 +101,6 @@ export default defineComponent({
   async created() {
     await this.loadAllRoles();
     await this.loadAuthorizations();
-
   },
   methods: {
     async loadAllRoles() {
@@ -169,9 +148,7 @@ export default defineComponent({
     },
     async deleteRole(roleId: number) {
       await axios
-        .delete(
-          process.env.VUE_APP_RESTFUL_SERVICES_PATH + "2.0/roles/" + roleId
-        )
+        .delete(process.env.VUE_APP_RESTFUL_SERVICES_PATH + "2.0/roles/" + roleId)
         .then(() => {
           this.$store.commit("setInfo", {
             title: this.$t("common.toast.deleteTitle"),
