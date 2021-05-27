@@ -1,5 +1,5 @@
 {
-    "filterFields": ["label", "name"],
+    "filterFields": ["name", "dataType"],
     "operation": {
         "insert": {
             "toastTitle": "common.toast.createTitle"

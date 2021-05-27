@@ -12,22 +12,22 @@ import Toolbar from 'primevue/toolbar'
 const mockedMetadata = [
     {
         objMetaId: 1,
-        label: 'metadata1',
-        name: 'name1',
+        label: 'label1',
+        name: 'metadata1',
         description: 'description1',
         dataTypeCode: 'SHORT_TEXT'
     },
     {
         objMetaId: 2,
-        label: 'metadata2',
-        name: 'name2',
+        label: 'label2',
+        name: 'metadata2',
         description: 'description2',
         dataTypeCode: 'SHORT_TEXT'
     },
     {
         objMetaId: 5,
-        label: 'metadata3',
-        name: 'name3',
+        label: 'label3',
+        name: 'metadata3',
         description: 'description3',
         dataTypeCode: 'FILE'
     }
@@ -126,8 +126,8 @@ describe('Metadata Management', () => {
         expect(wrapper.vm.formVisible).toBe(true)
         expect(wrapper.vm.selectedMetadata).toStrictEqual({
             id: 1,
-            label: 'metadata1',
-            name: 'name1',
+            label: 'label1',
+            name: 'metadata1',
             description: 'description1',
             dataType: 'SHORT_TEXT'
         })
@@ -145,19 +145,19 @@ describe('Metadata Management Search', () => {
         expect(metadataList.html()).toContain('metadata2')
         expect(metadataList.html()).toContain('metadata3')
 
-        // Label
-        await searchInput.setValue('metadata1')
-        await metadataList.trigger('filter')
-        expect(metadataList.html()).toContain('metadata1')
-        expect(metadataList.html()).not.toContain('metadata2')
-        expect(metadataList.html()).not.toContain('metadata3')
-
         // Name
-        await searchInput.setValue('name2')
+        await searchInput.setValue('metadata2')
         await metadataList.trigger('filter')
         expect(metadataList.html()).not.toContain('metadata1')
         expect(metadataList.html()).toContain('metadata2')
         expect(metadataList.html()).not.toContain('metadata3')
+
+        // Data type
+        await searchInput.setValue('FILE')
+        await metadataList.trigger('filter')
+        expect(metadataList.html()).not.toContain('metadata1')
+        expect(metadataList.html()).not.toContain('metadata2')
+        expect(metadataList.html()).toContain('metadata3')
     })
     it('returns no data if the label is not present', async () => {
         const wrapper = factory()

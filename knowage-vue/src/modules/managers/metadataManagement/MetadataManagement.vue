@@ -29,10 +29,8 @@
                         <template #option="slotProps">
                             <div class="kn-list-item" data-test="list-item">
                                 <div class="kn-list-item-text">
-                                    <span>{{ slotProps.option.label }}</span>
-                                </div>
-                                <div class="kn-list-item-text">
                                     <span>{{ slotProps.option.name }}</span>
+                                    <span class="kn-list-item-text-secondary">{{ slotProps.option.dataType }}</span>
                                 </div>
                                 <Button icon="pi pi-trash" class="p-button-link p-button-sm" @click="deleteMetadataConfirm(slotProps.option.id)" :data-test="'delete-button'" />
                             </div>
