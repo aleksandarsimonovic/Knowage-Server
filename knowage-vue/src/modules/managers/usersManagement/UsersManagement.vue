@@ -320,7 +320,7 @@
 import { defineComponent } from "vue";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
 import { iUser, iRole, iAttribute } from "./UsersManagement";
-import { deleteUserById, insertUser, updateUser } from "./UserApi";
+import UserService from "./UserService";
 import { required, requiredIf, sameAs, minLength, helpers } from "@vuelidate/validators";
 import useValidate from "@vuelidate/core";
 
@@ -348,6 +348,7 @@ export default defineComponent({
   },
   data() {
     return {
+      userService: {} as UserService,
       v$: useValidate() as any,
       apiUrl: process.env.VUE_APP_RESTFUL_SERVICES_PATH + "2.0/",
       users: [] as iUser[],
@@ -418,6 +419,7 @@ export default defineComponent({
     };
   },
   async created() {
+    this.userService = new UserService(this.$t);
     await this.loadAllUsers();
     await this.loadAllRoles();
     await this.loadAllAttributes();
@@ -543,29 +545,17 @@ export default defineComponent({
     async saveUser() {
      this.loading = true;
       this.formatUserObject();
-      let response;
+      let response : any;
 
       try {
         if (this.userDetailsForm.id != null) {
-          response = await updateUser(
-            this.$t,
-            this.userDetailsForm,
-            this.userDetailsForm.id
-          );
+          response = await this.userService.update(this.userDetailsForm);
         } else {
-          response = await insertUser(this.$t, {
-            userId: this.userDetailsForm.userId,
-            fullName: this.userDetailsForm.fullName,
-            password: this.userDetailsForm.password,
-            defaultRoleId: this.userDetailsForm["defaultRoleId"],
-            sbiExtUserRoleses: this.userDetailsForm["sbiExtUserRoleses"],
-            sbiUserAttributeses: this.userDetailsForm["sbiUserAttributeses"],
-          });
+          response = await this.userService.insert(this.userDetailsForm);
         }
 
         if (response) {
           this.loadAllUsers();
-          this.hiddenForm = true;
           this.loading = false;
         }
       } catch (error) {
@@ -591,7 +581,7 @@ export default defineComponent({
           this.loading = true;
 
           try {
-            let response = await deleteUserById(this.$t, id);
+            let response = await this.userService.delete(id);
 
             if (response) {
               this.loadAllUsers();
