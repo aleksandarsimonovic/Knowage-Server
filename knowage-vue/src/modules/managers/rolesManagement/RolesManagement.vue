@@ -82,7 +82,6 @@ export default defineComponent({
 
     async created() {
         await this.loadAllRoles()
-        await this.loadAuthorizations()
     },
     methods: {
         async loadAllRoles() {
@@ -91,15 +90,6 @@ export default defineComponent({
                 .get(process.env.VUE_APP_RESTFUL_SERVICES_PATH + '2.0/roles')
                 .then((response) => {
                     this.roles = response.data
-                })
-                .finally(() => (this.loading = false))
-        },
-        async loadAuthorizations() {
-            this.loading = true
-            await axios
-                .get(process.env.VUE_APP_RESTFUL_SERVICES_PATH + 'authorizations')
-                .then((response) => {
-                    this.authorizationList = response.data.root
                 })
                 .finally(() => (this.loading = false))
         },

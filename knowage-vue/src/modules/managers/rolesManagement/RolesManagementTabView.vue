@@ -94,13 +94,13 @@
                                     <Dropdown
                                         id="roleTypeID"
                                         class="kn-material-input"
-                                        :options="roleTypes"
+                                        :options="translatedRoleTypes"
                                         optionLabel="VALUE_CD"
                                         optionValue="VALUE_ID"
                                         v-model="v$.selectedRole.roleTypeID.$model"
                                         :class="{ 'p-invalid': v$.selectedRole.roleTypeID.$invalid && v$.selectedRole.roleTypeID.$dirty }"
                                         @before-show="v$.selectedRole.roleTypeID.$touch()"
-                                        @change="setDirty"
+                                        @change="onRoleTypeChange"
                                     >
                                     </Dropdown>
                                     <label for="roleTypeID" class="kn-material-input-label"> {{ $t('managers.rolesManagement.detail.roleTypeID') }} * </label>
@@ -121,11 +121,27 @@
 
             <TabPanel>
                 <template #header>
-                    <span>{{ $t('managers.rolesManagement.authorizations') }}</span>
+                    <span>{{ $t('managers.rolesManagement.authorizations.title') }}</span>
                 </template>
 
-                <Card :style="rolesManagementTabViewDescriptor.card.style">
-                    <template #content> AUTHORIZATIONS </template>
+                <Card>
+                    <template #content>
+                        <div v-for="(category, index) of rolesManagementTabViewDescriptor.categories" :key="index">
+                            <template v-if="authorizationCBs[category.categoryName] && authorizationCBs[category.categoryName].length">
+                                <Toolbar class="kn-toolbar kn-toolbar--secondary">
+                                    <template #left>
+                                        {{ $t(category.name) }}
+                                    </template>
+                                </Toolbar>
+                                <div v-for="(authCBInfo, index) of authorizationCBs[category.categoryName]" :key="index">
+                                    <div class="p-field-checkbox p-m-3">
+                                        <Checkbox id="binary" v-model="selectedRole[authCBInfo.fieldName]" :binary="true" :disabled="authCBInfo.enableForRole && !authCBInfo.enableForRole.includes(selectedRole.roleTypeID)" />
+                                        <label for="binary">{{ $t(authCBInfo.label) }}</label>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
                 </Card>
             </TabPanel>
 
@@ -196,14 +212,16 @@ export default defineComponent({
     data() {
         return {
             rolesManagementTabViewDescriptor: rolesManagementTabViewDescriptor,
-            roleTypes: [],
+            roleTypes: [] as any,
+            translatedRoleTypes: [] as any,
             selectedBusinessModels: [] as any[], // praviti interfejs za ovo?!!
             selectedDataSets: [] as any[],
             selectedKPICategories: [] as any[],
             selectedRole: {} as any,
             roleMetaModelCategories: [] as any[],
             selectedCategories: [] as any[],
-            authorizationList: [],
+            authorizationList: [] as any,
+            authorizationCBs: {} as any,
             businessModelList: [] as any[],
             dataSetList: [] as any[],
             kpiCategoriesList: [] as any[],
@@ -248,6 +266,8 @@ export default defineComponent({
     async created() {
         await this.loadAllDomainsData()
         await this.loadSelectedRole()
+        await this.loadAuthorizations()
+        await this.initAuthorizationCB()
     },
     methods: {
         async handleSubmit() {
@@ -257,7 +277,7 @@ export default defineComponent({
 
             this.selectedRole.roleMetaModelCategories = []
 
-            this.mapCategories();
+            this.mapCategories()
 
             let url = process.env.VUE_APP_RESTFUL_SERVICES_PATH + '2.0/roles/'
             if (this.selectedRole.id) {
@@ -285,9 +305,28 @@ export default defineComponent({
         loadDomains(type: string) {
             return axios.get(process.env.VUE_APP_RESTFUL_SERVICES_PATH + `domains/listValueDescriptionByType?DOMAIN_TYPE=${type}`).finally(() => (this.loading = false))
         },
+        async loadAuthorizations() {
+            this.loading = true
+            await axios
+                .get(process.env.VUE_APP_RESTFUL_SERVICES_PATH + 'authorizations')
+                .then((response) => {
+                    this.authorizationList = response.data.root
+                    console.log(this.authorizationList)
+                    this.rolesManagementTabViewDescriptor.authorizations.forEach((authorization) => {
+                        authorization.visible = this.authorizationList.findIndex((auth) => authorization.dbname === auth.name) > 0
+                    })
+                })
+                .finally(() => (this.loading = false))
+        },
+        initAuthorizationCB() {
+            this.rolesManagementTabViewDescriptor.categories.forEach((category) => {
+                this.authorizationCBs[category.categoryName] = this.rolesManagementTabViewDescriptor.authorizations.filter((authCB) => authCB.category === category.categoryName && authCB.visible)
+            })
+        },
         async loadAllDomainsData() {
             await this.loadDomains('ROLE_TYPE').then((response) => {
-                this.roleTypes = response.data.map((roleType) => {
+                this.roleTypes = response.data
+                this.translatedRoleTypes = response.data.map((roleType) => {
                     return { VALUE_CD: this.$t(`managers.rolesManagement.rolesDropdown.${roleType.VALUE_CD}`), VALUE_ID: roleType.VALUE_ID }
                 })
             })
@@ -348,6 +387,13 @@ export default defineComponent({
         setDirty() {
             this.$emit('touched')
         },
+        onRoleTypeChange(event) {
+            this.setDirty()
+            const selRoleType = this.roleTypes.find((roleType) => roleType.VALUE_ID === event.value)
+            if (selRoleType) {
+                this.selectedRole.roleTypeCD = selRoleType.VALUE_CD
+            }
+        },
         closeTemplate() {
             this.$router.push('/roles')
             this.$emit('closed')
@@ -372,20 +418,20 @@ export default defineComponent({
             }
 
             if (this.selectedDataSets.length > 0) {
-            this.selectedDataSets.map((category: any) => {
-                this.selectedRole.roleMetaModelCategories.push({
-                    categoryId: category.categoryId
+                this.selectedDataSets.map((category: any) => {
+                    this.selectedRole.roleMetaModelCategories.push({
+                        categoryId: category.categoryId
+                    })
                 })
-            })
             }
 
             if (this.selectedKPICategories.length > 0) {
-                console.log(this.selectedKPICategories);
-            this.selectedKPICategories.map((category: any) => {
-                this.selectedRole.roleMetaModelCategories.push({
-                    categoryId: category.categoryId
+                console.log(this.selectedKPICategories)
+                this.selectedKPICategories.map((category: any) => {
+                    this.selectedRole.roleMetaModelCategories.push({
+                        categoryId: category.categoryId
+                    })
                 })
-            })
             }
         },
         setSelectedBusinessModels(value) {
