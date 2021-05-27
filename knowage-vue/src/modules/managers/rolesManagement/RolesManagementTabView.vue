@@ -118,6 +118,7 @@
                     </template>
                 </Card>
             </TabPanel>
+
             <TabPanel>
                 <template #header>
                     <span>{{ $t('managers.rolesManagement.authorizations') }}</span>
@@ -133,27 +134,7 @@
                     <span>{{ $t('managers.rolesManagement.businessModels') }}</span>
                 </template>
 
-                <Card :style="rolesManagementTabViewDescriptor.card.style">
-                    <template #header>
-                        <Toolbar class="kn-toolbar kn-toolbar--secondary">
-                            <template #left>
-                                {{ $t('managers.rolesManagement.businessModels') + ' ' + $t('managers.rolesManagement.categories') }}
-                            </template>
-                        </Toolbar>
-                    </template>
-                    <template #content>
-                        <DataTable :value="businessModelList" v-model:selection="selectedBusinessModels" class="p-datatable-sm kn-table" dataKey="categoryId" :paginator="true" :rows="20" responsiveLayout="stack" breakpoint="960px" @rowSelect="setDirty" @rowUnselect="setDirty">
-                            <template #empty>
-                                {{ $t('common.info.noDataFound') }}
-                            </template>
-                            <template #loading v-if="loading">
-                                {{ $t('common.info.dataLoading') }}
-                            </template>
-                            <Column selectionMode="multiple" header="Select All" headerClass="column-header" :style="rolesManagementTabViewDescriptor.column.style"></Column>
-                            <Column field="categoryName" header="Name" headerClass="column-header"></Column>
-                        </DataTable>
-                    </template>
-                </Card>
+                <DomainCategoryTab :categoryList="businessModelList" :selected="selectedBusinessModels" @changed="setSelectedBusinessModels($event)"></DomainCategoryTab>
             </TabPanel>
 
             <TabPanel>
@@ -161,28 +142,7 @@
                     <span>{{ $t('managers.rolesManagement.dataSets') }}</span>
                 </template>
 
-                <Card :style="rolesManagementTabViewDescriptor.card.style">
-                    <template #header>
-                        <Toolbar class="kn-toolbar kn-toolbar--secondary">
-                            <template #left>
-                                {{ $t('managers.rolesManagement.dataSets') + ' ' + $t('managers.rolesManagement.categories') }}
-                            </template>
-                        </Toolbar>
-                    </template>
-                    <template #content>
-                        <DataTable :value="dataSetList" v-model:selection="selectedDataSets" class="p-datatable-sm kn-table" dataKey="categoryId" :paginator="true" :rows="20" responsiveLayout="stack" breakpoint="960px" @rowSelect="setDirty" @rowUnselect="setDirty">
-                            <template #empty>
-                                {{ $t('common.info.noDataFound') }}
-                            </template>
-                            <template #loading v-if="loading">
-                                test
-                                {{ $t('common.info.dataLoading') }}
-                            </template>
-                            <Column selectionMode="multiple" header="Select All" headerClass="column-header" :style="rolesManagementTabViewDescriptor.column.style"></Column>
-                            <Column field="categoryName" header="Name" headerClass="column-header"> </Column>
-                        </DataTable>
-                    </template>
-                </Card>
+                <DomainCategoryTab :categoryList="dataSetList" :selected="selectedDataSets" @changed="setSelectedDataSets($event)"></DomainCategoryTab>
             </TabPanel>
 
             <TabPanel>
@@ -190,27 +150,7 @@
                     <span>{{ $t('managers.rolesManagement.kpiCategories') }}</span>
                 </template>
 
-                <Card :style="rolesManagementTabViewDescriptor.card.style">
-                    <template #header>
-                        <Toolbar class="kn-toolbar kn-toolbar--secondary">
-                            <template #left>
-                                {{ $t('managers.rolesManagement.kpiCategories') + ' ' + $t('managers.rolesManagement.categories') }}
-                            </template>
-                        </Toolbar>
-                    </template>
-                    <template #content>
-                        <DataTable :value="kpiCategoriesList" v-model:selection="selectedKPICategories" class="p-datatable-sm kn-table" dataKey="categoryId" :paginator="true" :rows="20" responsiveLayout="stack" breakpoint="960px" @rowSelect="setDirty" @rowUnselect="setDirty">
-                            <template #empty>
-                                {{ $t('common.info.noDataFound') }}
-                            </template>
-                            <template #loading v-if="loading">
-                                {{ $t('common.info.dataLoading') }}
-                            </template>
-                            <Column selectionMode="multiple" header="Select All" headerClass="column-header" :style="rolesManagementTabViewDescriptor.column.style"></Column>
-                            <Column field="categoryName" header="Name" headerClass="column-header"> </Column>
-                        </DataTable>
-                    </template>
-                </Card>
+                <DomainCategoryTab :categoryList="kpiCategoriesList" :selected="selectedKPICategories" @changed="setSelectedKPICategories($event)"></DomainCategoryTab>
             </TabPanel>
         </TabView>
     </div>
@@ -221,8 +161,8 @@ import { required, maxLength } from '@vuelidate/validators'
 import { extendedAlphanumeric } from '@/helpers/commons/regexHelper'
 import axios from 'axios'
 import KnValidationMessages from '@/components/UI/KnValidatonMessages.vue'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
+// import DataTable from 'primevue/datatable'
+// import Column from 'primevue/column'
 import Card from 'primevue/card'
 import TabView from 'primevue/tabview'
 import TabPanel from 'primevue/tabpanel'
@@ -230,6 +170,7 @@ import Dropdown from 'primevue/dropdown'
 import Checkbox from 'primevue/checkbox'
 import rolesManagementTabViewDescriptor from './RolesManagementTabViewDescriptor.json'
 import useValidate from '@vuelidate/core'
+import DomainCategoryTab from './cards/DomainCategoryTab.vue'
 
 const regex = (value: any) => {
     return extendedAlphanumeric.test(value)
@@ -238,10 +179,9 @@ const regex = (value: any) => {
 export default defineComponent({
     components: {
         Card,
+        DomainCategoryTab,
         Dropdown,
         Checkbox,
-        DataTable,
-        Column,
         KnValidationMessages,
         TabView,
         TabPanel
@@ -317,21 +257,7 @@ export default defineComponent({
 
             this.selectedRole.roleMetaModelCategories = []
 
-            this.selectedBusinessModels.map((category: any) => {
-                this.selectedRole.roleMetaModelCategories.push({
-                    categoryId: category.categoryId
-                })
-            })
-            this.selectedDataSets.map((category: any) => {
-                this.selectedRole.roleMetaModelCategories.push({
-                    categoryId: category.categoryId
-                })
-            })
-            this.selectedKPICategories.map((category: any) => {
-                this.selectedRole.roleMetaModelCategories.push({
-                    categoryId: category.categoryId
-                })
-            })
+            this.mapCategories();
 
             let url = process.env.VUE_APP_RESTFUL_SERVICES_PATH + '2.0/roles/'
             if (this.selectedRole.id) {
@@ -410,7 +336,11 @@ export default defineComponent({
                             this.selectedDataSets.push(this.dataSetList[index])
                         }
 
-                        this.selectedKPICategories.push(this.selectedKPICategories[index])
+                        index = this.indexInList(category, this.kpiCategoriesList)
+
+                        if (index != -1) {
+                            this.selectedKPICategories.push(this.kpiCategoriesList[index])
+                        }
                     })
                 })
             }
@@ -431,6 +361,47 @@ export default defineComponent({
             this.selectedBusinessModels = []
             this.selectedDataSets = []
             this.selectedKPICategories = []
+        },
+        mapCategories() {
+            if (this.selectedBusinessModels.length > 0) {
+                this.selectedBusinessModels.map((category: any) => {
+                    this.selectedRole.roleMetaModelCategories.push({
+                        categoryId: category.categoryId
+                    })
+                })
+            }
+
+            if (this.selectedDataSets.length > 0) {
+            this.selectedDataSets.map((category: any) => {
+                this.selectedRole.roleMetaModelCategories.push({
+                    categoryId: category.categoryId
+                })
+            })
+            }
+
+            if (this.selectedKPICategories.length > 0) {
+                console.log(this.selectedKPICategories);
+            this.selectedKPICategories.map((category: any) => {
+                this.selectedRole.roleMetaModelCategories.push({
+                    categoryId: category.categoryId
+                })
+            })
+            }
+        },
+        setSelectedBusinessModels(value) {
+            this.selectedBusinessModels = value
+            this.$emit('touched')
+            console.log(this.selectedBusinessModels)
+        },
+        setSelectedDataSets(value) {
+            this.selectedDataSets = value
+            this.$emit('touched')
+            console.log(this.selectedDataSets)
+        },
+        setSelectedKPICategories(value) {
+            this.selectedKPICategories = value
+            this.$emit('touched')
+            console.log(this.selectedKPICategories)
         }
     }
 })
