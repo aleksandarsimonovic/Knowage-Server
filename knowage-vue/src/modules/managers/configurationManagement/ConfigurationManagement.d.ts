@@ -4,7 +4,6 @@ export interface iConfiguration {
     name: string;
     description: string;
     active: boolean | null;
-    valueCheck: string;
     category: string;
   }
   
