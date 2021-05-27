@@ -113,6 +113,7 @@
         ></KnValidationMessages>
       </div>
 
+      <h5>Is active? *</h5>
       <div class="p-field" :style="configurationManagementDescriptor.pField.style">
           <div class="p-field-checkbox">
               <Checkbox id="isActive" v-model="v$.configuration.active.$model" :binary="true" />
