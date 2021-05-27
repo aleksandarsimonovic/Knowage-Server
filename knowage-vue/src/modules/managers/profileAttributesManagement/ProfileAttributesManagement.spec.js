@@ -102,12 +102,15 @@ describe("ProfileAttributes Management loading", () => {
   });
 });
 
+
+//form tests
+
 describe("ProfileAttributes Management", () => {
   it("opens empty form when the '+' button is clicked", async () => {
     const wrapper = factory();
     const openButton = wrapper.find('[data-test="open-form-button"]');
     await openButton.trigger("click");
-    expect(wrapper.vm.showForm).toBe(false);
+    expect(wrapper.vm.showForm).toBe(true);
   });
 
   it("shows form when a row is clicked", async () => {
