@@ -3,6 +3,16 @@
     { "field": "attributeName", "header": "Name" },
     { "field": "attributeDescription", "header": "Description" }
   ],
+  "attributeTypeValues": [
+    { "name": "String", "value": "STRING" },
+    { "name": "Number", "value": "NUM" },
+    { "name": "Date", "value": "DATE" }
+  ],
+  "headers": {
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  },
   "globalFilterFields": [
     "attributeName",
     "attributeDescription"
