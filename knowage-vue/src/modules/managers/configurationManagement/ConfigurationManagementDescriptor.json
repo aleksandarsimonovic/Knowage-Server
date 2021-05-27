@@ -9,10 +9,6 @@
       "header": "managers.configurationManagement.headers.name"
     },
     {
-      "field": "valueCheck",
-      "header": "managers.configurationManagement.headers.valueCheck"
-    },
-    {
       "field": "category",
       "header": "managers.configurationManagement.headers.category"
     },
@@ -38,7 +34,6 @@
   "globalFilterFields": [
     "label",
     "name",
-    "valueCheck",
     "category",
     "active"
   ],

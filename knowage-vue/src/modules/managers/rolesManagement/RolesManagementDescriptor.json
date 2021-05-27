@@ -1,0 +1,44 @@
+{
+  "columns": [
+    {
+      "field": "name",
+      "header": "Name"
+    },
+    {
+      "field": "description",
+      "header": "Description"
+    }
+  ],
+  "globalFilterFields": [
+    "name",
+    "description"
+  ],
+  "roleType": [
+    {
+      "name": "User",
+      "value": "user"
+    },
+    {
+      "name": "Administrator",
+      "value": "administrator"
+    },
+    {
+      "name": "Developer",
+      "value": "developer"
+    },
+    {
+      "name": "Test User",
+      "value": "testUser"
+    },
+    {
+      "name": "Model Administrator",
+      "value": "modelAdministrator"
+    }
+  ],
+  "pField": {
+    "style": {
+      "margin-bottom": "40px"
+    }
+  }
+
+}

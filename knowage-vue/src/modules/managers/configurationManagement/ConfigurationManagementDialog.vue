@@ -88,33 +88,6 @@
 
       <div class="p-field" :style="configurationManagementDescriptor.pField.style">
         <span class="p-float-label">
-          <InputText
-            id="valueCheck"
-            class="kn-material-input"
-            type="text"
-            v-model.trim="v$.configuration.valueCheck.$model"
-            :class="{
-              'p-invalid':
-                v$.configuration.valueCheck.$invalid &&
-                v$.configuration.valueCheck.$dirty,
-            }"
-            maxLength="1000"
-            @blur="v$.configuration.valueCheck.$touch()"
-          />
-          <label for="valueCheck" class="kn-material-input-label">
-            {{ $t("managers.configurationManagement.headers.valueCheck")}} 
-          </label>
-        </span>
-        <KnValidationMessages
-          :vComp="v$.configuration.valueCheck"
-          :additionalTranslateParams="{
-            fieldName: $t('managers.configurationManagement.headers.valueCheck')
-          }"
-        ></KnValidationMessages>
-      </div>
-
-      <div class="p-field" :style="configurationManagementDescriptor.pField.style">
-        <span class="p-float-label">
           <Dropdown
             id="category"
             class="kn-material-input"
@@ -140,11 +113,12 @@
         ></KnValidationMessages>
       </div>
 
-      <h5>Is active?</h5>
+      <h5>Is active? *</h5>
       <div class="p-field" :style="configurationManagementDescriptor.pField.style">
-        <span class="p-float-label">
-          <SelectButton v-model="v$.configuration.active.$model" :options="options" />
-        </span>
+          <div class="p-field-checkbox">
+              <Checkbox id="isActive" v-model="v$.configuration.active.$model" :binary="true" />
+              <label for="isActive"> {{$t('managers.configurationManagement.headers.active')}} *</label>
+          </div>
         <KnValidationMessages
           :vComp="v$.configuration.active"
           :additionalTranslateParams="{
@@ -180,7 +154,7 @@ import axios from "axios";
 import useValidate from "@vuelidate/core";
 import Dialog from "primevue/dialog";
 import Dropdown from "primevue/dropdown";
-import SelectButton from 'primevue/selectbutton';
+import Checkbox from 'primevue/checkbox';
 import KnValidationMessages from '@/components/UI/KnValidatonMessages.vue';
 
 
@@ -190,7 +164,7 @@ const regex = (value: any) => {
 
 export default defineComponent({
   name: "configuration-management-dialog",
-  components: { Dialog, Dropdown, SelectButton, KnValidationMessages },
+  components: { Dialog, Dropdown, Checkbox, KnValidationMessages },
   props: {
     model: {
       type: Object,
@@ -227,11 +201,6 @@ export default defineComponent({
         },
         active: {
           required,
-        },
-        valueCheck: {
-          required,
-          maximumCharacters: maxLength(1000),
-          regex
         },
         category: {
           required,
