@@ -37,34 +37,10 @@ const mockedRoles = [
     }
 ]
 
-const mocekdAuthorizations = {
-    root: [
-        {
-            name: 'CREATE_DOCUMENTS'
-        },
-        {
-            name: 'MANAGE_CALENDAR'
-        }
-    ]
-}
-
 jest.mock('axios')
 
-axios.get.mockImplementation((url) => {
-    switch (url) {
-        case process.env.VUE_APP_RESTFUL_SERVICES_PATH + '2.0/roles':
-            return Promise.resolve({ data: mockedRoles })
-        case process.env.VUE_APP_RESTFUL_SERVICES_PATH + 'authorizations':
-            return Promise.resolve({ data: mocekdAuthorizations })
-    }
-})
-
+axios.get.mockImplementation(() => Promise.resolve({ data: mockedRoles }))
 axios.delete.mockImplementation(() => Promise.resolve())
-
-// jest.mock('axios', () => ({
-//     get: jest.fn(() => Promise.resolve({ data: mockedRoles })),
-//     delete: jest.fn(() => Promise.resolve())
-// }))
 
 const $confirm = {
     require: jest.fn()
@@ -75,7 +51,7 @@ const $store = {
 }
 
 const $router = {
-  push: jest.fn()
+    push: jest.fn()
 }
 
 const factory = () => {
@@ -110,34 +86,19 @@ describe('Roles Management loading', () => {
         expect(wrapper.find('[data-test="progress-bar"]').exists()).toBe(true)
     })
     it('shows "no data" label when loaded empty', async () => {
-        axios.get.mockImplementation((url) => {
-            switch (url) {
-                case process.env.VUE_APP_RESTFUL_SERVICES_PATH + '2.0/roles':
-                    return Promise.resolve({ data: [] })
-                case process.env.VUE_APP_RESTFUL_SERVICES_PATH + 'authorizations':
-                    return Promise.resolve({ data: { root: [] } })
-            }
-        })
+        axios.get.mockReturnValueOnce(Promise.resolve({ data: [] }))
         const wrapper = factory()
 
         await flushPromises()
 
         expect(wrapper.vm.roles.length).toBe(0)
-        expect(wrapper.vm.authorizationList.length).toBe(0)
         expect(wrapper.find('[data-test="roles-list"]').html()).toContain('common.info.noDataFound')
     })
 })
 
 describe('Roles Management', () => {
     it('deletes role after clicking on delete icon', async () => {
-        axios.get.mockImplementation((url) => {
-            switch (url) {
-                case process.env.VUE_APP_RESTFUL_SERVICES_PATH + '2.0/roles':
-                    return Promise.resolve({ data: mockedRoles })
-                case process.env.VUE_APP_RESTFUL_SERVICES_PATH + 'authorizations':
-                    return Promise.resolve({ data: mocekdAuthorizations })
-            }
-        })
+        axios.get.mockImplementation(() => Promise.resolve({ data: mockedRoles }))
 
         const wrapper = factory()
         await flushPromises()
@@ -153,8 +114,7 @@ describe('Roles Management', () => {
         expect(axios.delete).toHaveBeenCalledTimes(1)
         expect(axios.delete).toHaveBeenCalledWith(process.env.VUE_APP_RESTFUL_SERVICES_PATH + '2.0/roles/' + 1)
     })
-    // TODO fix description?
-    it('adds empty card with inputs and tabs in detail when the "+" button is clicked', async () => {
+    it('changes url when the "+" button is clicked', async () => {
         const wrapper = factory()
         const openButton = wrapper.find('[data-test="open-form-button"]')
 
@@ -162,16 +122,13 @@ describe('Roles Management', () => {
 
         expect($router.push).toHaveBeenCalledWith('/roles/new-role')
     })
-    // TODO ask for this one
     it('changes url with clicked row id when a row is clicked', async () => {
         const wrapper = factory()
         await flushPromises()
         await wrapper.find('[data-test="list-item"]').trigger('click')
 
-        expect($router.push).toHaveBeenCalledWith('/roles/' + 1);
+        expect($router.push).toHaveBeenCalledWith('/roles/' + 1)
     })
-    // TODO ask about mocking router
-    xit('shows filled inputs card with clicked row data', () => {})
 })
 
 describe('Roles Management Search', () => {

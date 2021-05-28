@@ -8,11 +8,21 @@
             </Toolbar>
         </template>
         <template #content>
-            <DataTable :value="categoryList" v-model:selection="selectedCategories" 
-            class="p-datatable-sm kn-table" dataKey="categoryId" 
-            :paginator="true" :rows="20" responsiveLayout="stack" 
-            breakpoint="960px" 
-            @rowSelect="setDirty" @rowUnselect="setDirty" @rowSelectAll="setDirty" @rowUnselectAll="setDirty" data-test="data-table">
+            <DataTable
+                :value="categoryList"
+                v-model:selection="selectedCategories"
+                class="p-datatable-sm kn-table"
+                dataKey="categoryId"
+                :paginator="true"
+                :rows="20"
+                responsiveLayout="stack"
+                breakpoint="960px"
+                @rowSelect="setDirty"
+                @rowUnselect="setDirty"
+                @rowSelectAll="setDirty"
+                @rowUnselectAll="setDirty"
+                data-test="data-table"
+            >
                 <template #empty>
                     {{ $t('common.info.noDataFound') }}
                 </template>

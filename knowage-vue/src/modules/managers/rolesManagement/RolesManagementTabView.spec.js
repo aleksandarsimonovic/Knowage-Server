@@ -15,6 +15,8 @@ import TabPanel from 'primevue/tabpanel'
 import TabView from 'primevue/tabview'
 import Toolbar from 'primevue/toolbar'
 
+// TODO tests for detail
+
 const mockedBuissnesModelList = [
     {
         VALUE_NM: 'Default Model Category',
@@ -65,6 +67,10 @@ const mockedRoleCategories = [
     {
         roleId: 1,
         categoryId: 152
+    },
+    {
+        roleId: 1,
+        categoryId: 256
     }
 ]
 const mockedRoleTypes = [
@@ -81,6 +87,27 @@ const mockedRoleTypes = [
         VALUE_CD: 'DEV_ROLE'
     }
 ]
+const mockedAuthorizations = [
+    {
+        name: 'CREATE_DOCUMENTS'
+    },
+    {
+        name: 'SEE_DOCUMENT_BROWSER'
+    }
+]
+
+const mockedRole = {
+    id: 1,
+    name: 'dev',
+    description: 'dev',
+    roleTypeCD: 'DEV_ROLE',
+    code: '1234',
+    roleTypeID: 29,
+    organization: 'DEFAULT_TENANT',
+    isPublic: true,
+    ableToSendMail: false,
+    ableToManageUsers: true
+}
 
 jest.mock('axios')
 
@@ -96,6 +123,10 @@ axios.get.mockImplementation((url) => {
             return Promise.resolve({ data: mockedRoleTypes })
         case process.env.VUE_APP_RESTFUL_SERVICES_PATH + `2.0/roles/categories/1`:
             return Promise.resolve({ data: mockedRoleCategories })
+        case process.env.VUE_APP_RESTFUL_SERVICES_PATH + 'authorizations':
+            return Promise.resolve({ data: { root: mockedAuthorizations } })
+        case process.env.VUE_APP_RESTFUL_SERVICES_PATH + `2.0/roles/1`:
+            return Promise.resolve({ data: mockedRole })
     }
 })
 
@@ -106,7 +137,7 @@ const $store = {
 }
 
 const $router = {
-    push: jest.fn()
+    replace: jest.fn()
 }
 
 const factory = () => {
@@ -139,21 +170,102 @@ afterEach(() => {
     jest.clearAllMocks()
 })
 
-describe('Roles Management Business Models', () => {
-    xit('switches to Business Models tab if Business Models is clicked', () => {
+describe('Roles Management Tab View', () => {
+    it('switches to Authorization tab if authorization is clicked', async () => {
+        const wrapper = factory()
+
+        await flushPromises()
+        await wrapper.find('.p-tabview-nav li:nth-child(2)').trigger('click')
+
+        expect(wrapper.find('[role="tabpanel"]:nth-child(2)').html()).toContain('managers.rolesManagement.authorizations.name.createDocuments')
+        expect(wrapper.find('[role="tabpanel"]:nth-child(2)').html()).toContain('managers.rolesManagement.authorizations.name.seeDocBrowser')
+        expect(wrapper.vm.authorizationList).toStrictEqual(mockedAuthorizations)
     })
-    xit("shows 'no data' label when loaded empty", () => {})
-    xit('one or more rows are selected if the detail has selections', () => {})
-})
+    it('switches to Business Models tab if Business Models is clicked', async () => {
+        const expectedBusinessModels = [
+            { categoryId: 172, categoryName: 'Default Model Category' },
+            { categoryId: 263, categoryName: 'Examples' }
+        ]
+        const wrapper = factory()
 
-describe('Roles Management Datasets', () => {
-    xit('switches to Datasets tab if Datasets is clicked', () => {})
-    xit("shows 'no data' label when loaded empty", () => {})
-    xit('one or more rows are selected if the detail has selections', () => {})
-})
+        expect(wrapper.find('[role="tabpanel"]:nth-child(3)').html()).toContain('common.info.noDataFound')
 
-describe('Roles Management KPI Categories', () => {
-    xit('switches to KPI Categories tab if KPI Categories is clicked', () => {})
-    xit("shows 'no data' label when loaded empty", () => {})
-    xit('one or more rows are selected if the detail has selections', () => {})
+        await flushPromises()
+        await wrapper.find('.p-tabview-nav li:nth-child(3)').trigger('click')
+
+        expect(wrapper.find('[role="tabpanel"]:nth-child(3)').html()).toContain('Default Model Category')
+        expect(wrapper.vm.businessModelList).toStrictEqual(expectedBusinessModels)
+    })
+    it('switches to Datasets tab if Datasets is clicked', async () => {
+        const expectedDatasets = [
+            { categoryId: 152, categoryName: 'Default Dataset Category' },
+            { categoryId: 250, categoryName: 'Sales' }
+        ]
+        const wrapper = factory()
+
+        expect(wrapper.find('[role="tabpanel"]:nth-child(4)').html()).toContain('common.info.noDataFound')
+
+        await flushPromises()
+        await wrapper.find('.p-tabview-nav li:nth-child(4)').trigger('click')
+
+        expect(wrapper.find('[role="tabpanel"]:nth-child(4)').html()).toContain('Default Dataset Category')
+        expect(wrapper.vm.dataSetList).toStrictEqual(expectedDatasets)
+    })
+    it('switches to KPI Categories tab if KPI Categories is clicked', async () => {
+        const expectedKpiCategories = [
+            { categoryId: 256, categoryName: 'PRODUCT' },
+            { categoryId: 257, categoryName: 'RICAVI' }
+        ]
+        const wrapper = factory()
+
+        expect(wrapper.find('[role="tabpanel"]:nth-child(5)').html()).toContain('common.info.noDataFound')
+
+        await flushPromises()
+        await wrapper.find('.p-tabview-nav li:nth-child(5)').trigger('click')
+
+        expect(wrapper.find('[role="tabpanel"]:nth-child(5)').html()).toContain('PRODUCT')
+        expect(wrapper.vm.kpiCategoriesList).toStrictEqual(expectedKpiCategories)
+    })
+
+    it('loads correct role and shows succes info if it is saved', async () => {
+        const wrapper = factory()
+        wrapper.setProps({ id: '1' })
+
+        await flushPromises()
+
+        expect(wrapper.vm.selectedRole).toStrictEqual(mockedRole)
+        expect(wrapper.vm.selectedBusinessModels).toStrictEqual([{ categoryId: 172, categoryName: 'Default Model Category' }])
+        expect(wrapper.vm.selectedDataSets).toStrictEqual([{ categoryId: 152, categoryName: 'Default Dataset Category' }])
+        expect(wrapper.vm.selectedKPICategories).toStrictEqual([{ categoryId: 256, categoryName: 'PRODUCT' }])
+
+        wrapper.vm.v$.$invalid = false
+        wrapper.vm.handleSubmit()
+
+        await flushPromises()
+
+        expect(axios.post).toHaveBeenCalledTimes(1)
+        expect(axios.post).toHaveBeenCalledWith(process.env.VUE_APP_RESTFUL_SERVICES_PATH + '2.0/roles/1', { ...mockedRole, roleMetaModelCategories: [{ categoryId: 172 }, { categoryId: 152 }, { categoryId: 256 }] })
+        expect($store.commit).toHaveBeenCalledTimes(1)
+        expect(wrapper.emitted()).toHaveProperty('inserted')
+        expect($router.replace).toHaveBeenCalledWith('/roles')
+    })
+
+    it('shows success info if new data is saved', async () => {
+        const wrapper = factory()
+        wrapper.vm.selectedRole = mockedRole
+        wrapper.vm.selectedBusinessModels = [{ categoryId: 172 }]
+        wrapper.vm.selectedDataSets = [{ categoryId: 152 }]
+        wrapper.vm.selectedKPICategories = [{ categoryId: 256 }]
+        delete wrapper.vm.selectedRole.id
+        wrapper.vm.v$.$invalid = false
+        wrapper.vm.handleSubmit()
+
+        await flushPromises()
+
+        expect(axios.post).toHaveBeenCalledTimes(1)
+        expect(axios.post).toHaveBeenCalledWith(process.env.VUE_APP_RESTFUL_SERVICES_PATH + '2.0/roles/', { ...mockedRole, roleMetaModelCategories: [{ categoryId: 172 }, { categoryId: 152 }, { categoryId: 256 }] })
+        expect($store.commit).toHaveBeenCalledTimes(1)
+        expect(wrapper.emitted()).toHaveProperty('inserted')
+        expect($router.replace).toHaveBeenCalledWith('/roles')
+    })
 })

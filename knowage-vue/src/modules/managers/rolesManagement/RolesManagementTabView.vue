@@ -17,7 +17,7 @@
   </Toolbar>
 
   <div class="card">
-    <TabView class="tabview-custom" ref="tabview4">
+    <TabView class="tabview-custom" data-test="tab-view">
       <TabPanel>
         <template #header>
           <span>{{ $t("managers.rolesManagement.detail.title") }}</span>
@@ -386,11 +386,6 @@ export default defineComponent({
         url += this.selectedRole.id;
       }
 
-      // FOR TESTING
-      // if (this.operation == 'insert') {
-      //     this.selectedRole.roleTypeCD = 'ADMIN'
-      // }
-
       await axios.post(url, this.selectedRole).then(() => {
         this.$store.commit("setInfo", {
           title: this.$t(
@@ -561,7 +556,6 @@ export default defineComponent({
       }
 
       if (this.selectedKPICategories.length > 0) {
-        console.log(this.selectedKPICategories);
         this.selectedKPICategories.map((category: any) => {
           this.selectedRole.roleMetaModelCategories.push({
             categoryId: category.categoryId,
@@ -572,17 +566,14 @@ export default defineComponent({
     setSelectedBusinessModels(value) {
       this.selectedBusinessModels = value;
       this.$emit("touched");
-      console.log(this.selectedBusinessModels);
     },
     setSelectedDataSets(value) {
       this.selectedDataSets = value;
       this.$emit("touched");
-      console.log(this.selectedDataSets);
     },
     setSelectedKPICategories(value) {
       this.selectedKPICategories = value;
       this.$emit("touched");
-      console.log(this.selectedKPICategories);
     },
   },
 });
