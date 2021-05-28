@@ -1,5 +1,5 @@
 <template>
-  <Toolbar class="kn-toolbar kn-toolbar--primary">
+  <Toolbar class="kn-toolbar kn-toolbar--secondary">
     <template #left>
       {{ attribute.attributeName }}
     </template>
@@ -26,7 +26,7 @@
   <div class="card">
     <Card style="width: 100%; margin-bottom: 2em">
       <template #content>
-        <form class="p-fluid p-m-5" ref="profile-attributes-form">
+        <form ref="profile-attributes-form">
           <div class="p-field">
             <div class="p-inputgroup">
               <span class="p-float-label">
@@ -37,14 +37,12 @@
                   @blur="v$.attribute.attributeName.$touch()"
                   class="p-inputtext p-component kn-material-input"
                 />
-                <label for="attributeName">Name *</label>
+                <label for="attributeName">{{ $t("managers.profileAttributesManagement.form.name") }} *</label>
               </span>
             </div>
 
             <div v-if="v$.attribute.attributeName.$invalid && v$.attribute.attributeName.$dirty" class="p-error">
-              <small v-if="v$.attribute.attributeName.required.$invalid">{{
-                v$.attribute.attributeName.required.$message
-              }}</small>
+              <small v-if="v$.attribute.attributeName.required.$invalid">{{ v$.attribute.attributeName.required.$message }}</small>
             </div>
           </div>
 
@@ -58,7 +56,7 @@
                   @blur="v$.attribute.attributeDescription.$touch()"
                   class="p-inputtext p-component kn-material-input"
                 />
-                <label for="attributeDescription">Description *</label>
+                <label for="attributeDescription">{{ $t("managers.profileAttributesManagement.form.description") }} *</label>
               </span>
             </div>
 
@@ -78,7 +76,7 @@
                   optionValue="value"
                   class="p-dropdown p-component p-inputwrapper p-inputwrapper-filled kn-material-input"
                 />
-                <label for="dataType">Data type *</label>
+                <label for="dataType">{{ $t("managers.profileAttributesManagement.form.dataType") }} *</label>
               </span>
             </div>
           </div>
@@ -92,7 +90,7 @@
                 :value="false"
                 @change="hideLovDropdown"
               />
-              <label for="disableLov">Manual input</label>
+              <label for="disableLov">{{ $t("managers.profileAttributesManagement.form.manualInput") }}</label>
             </div>
 
             <div class="p-field-radiobutton p-col-6 p-sm-12 p-md-6">
@@ -103,7 +101,7 @@
                 v-model="enableLov"
                 @change="showLovDropdown"
               />
-              <label for="enableLov">Lov</label>
+              <label for="enableLov">{{ $t("managers.profileAttributesManagement.form.lov") }}</label>
             </div>
           </div>
 
@@ -118,7 +116,7 @@
                   class="p-dropdown p-component p-inputwrapper p-inputwrapper-filled kn-material-input"
                 />
 
-                <label for="attributeDescription">Lov *</label>
+                <label for="attributeDescription">{{ $t("managers.profileAttributesManagement.form.lov") }} *</label>
               </span>
             </div>
           </div>
@@ -127,13 +125,13 @@
             <div class="p-field-radiobutton p-col-6 p-sm-12 p-md-6">
               <InputSwitch v-model="v$.attribute.multivalue.$model" />
               <i class="pi pi-bars"></i>
-              <label for="multiValue">Multivalue</label>
+              <label for="multiValue">{{ $t("managers.profileAttributesManagement.form.multiValue") }}</label>
             </div>
 
             <div class="p-field-radiobutton p-col-6 p-sm-12 p-md-6">
               <InputSwitch v-model="v$.attribute.allowUser.$model" />
               <i class="pi pi-eye"></i>
-              <label for="multiValue">Allow user to see field</label>
+              <label for="multiValue">{{ $t("managers.profileAttributesManagement.form.allowUser") }}</label>
             </div>
           </div>
         </form>
@@ -291,7 +289,7 @@ export default defineComponent({
       this.$confirm.require({
         message: this.$t("managers.profileAttributesManagement.confirmDeleteMessage",
           {
-            item: "user",
+            item: "attribute",
           }
         ),
         header: this.$t("common.confirmation"),

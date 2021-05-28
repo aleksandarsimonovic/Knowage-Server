@@ -102,9 +102,6 @@ describe("ProfileAttributes Management loading", () => {
   });
 });
 
-
-//form tests
-
 describe("ProfileAttributes Management", () => {
   it("opens empty form when the '+' button is clicked", async () => {
     const wrapper = factory();

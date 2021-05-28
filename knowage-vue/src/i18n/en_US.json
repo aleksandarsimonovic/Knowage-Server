@@ -148,9 +148,13 @@
 			  "maximumCharacters": "The maximum length allowed is {length}",
 			  "required": "{field} is required"
 			},
+			"detail": "Detail",
+			"roles": "Roles",
+			"attributes": "Attributes",
+			"unlockUser": "Unlock user",
 			"unsavedChangesHeader": "Unsaved changes",
 			"unsavedChangesMessage": "You have not saved your recent changes. Continue without saving ?",
-			"blockedUserInfo": "THIS USER REACHED THE MAXIMUM NUMBER OF FAILED LOGIN ATTEMPTS AND THEREFORE HE WAS LOCKED. DO YOU WANT TO UNLOCK HIM?",
+			"blockedUserInfo": "This user reached the maximum number of failed login attempts and therefore he was locked. Do you want to unlock him?",
 			"defaultRoleInfo": "Select a role if you want to set it as the default. If no role is selected, it will be possible switch between roles from the Knowage Administration menu",
 			"valueDescription": "Value description",
 			"confirmDeleteMessage": "Are you sure you want to delete the selected {item}?",
@@ -162,8 +166,15 @@
 			  "deleteTitle": "Delete user",
 			  "updateMessage": "User updated",
 			  "updateTitle": "Update user"
+			},
+			"form": {
+			  "defaultRole": "Default role",
+			  "userId": "User ID",
+			  "fullName": "Full Name",
+			  "password": "Password",
+			  "passwordConfirm": "Confirm Password"
 			}
-		},
+		  },
 		"profileAttributesManagement": {
 			"title": "Profile Attributes",
 			"name": "Name",
@@ -185,8 +196,17 @@
 			  "deleteTitle": "Delete attribute",
 			  "updateMessage": "Attribute updated",
 			  "updateTitle": "Update attribute"
+			},
+			"form": {
+			  "name": "Name",
+			  "description": "Description",
+			  "dataType": "Data type",
+			  "manualInput": "Manual input",
+			  "lov": "Lov",
+			  "multiValue": "Multivalue",
+			  "allowUser": "Allow user to see field"
 			}
-		},
+		  },
 		"widgetGallery": {
 			"deleteTemplate": "Delete template",
 			"downloadTemplate": "Download template",

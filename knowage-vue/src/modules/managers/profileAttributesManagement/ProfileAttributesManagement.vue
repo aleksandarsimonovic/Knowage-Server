@@ -1,13 +1,17 @@
 <template>
-  <div class="kn-page">
+ <div class="kn-page">
     <div class="kn-page-content p-grid p-m-0">
-      <div class="kn-list--column p-col-5 p-sm-12 p-md-5 p-p-0">
+      <div class="kn-list--column p-col-4 p-sm-4 p-md-3 p-p-0">
         <Toolbar class="kn-toolbar kn-toolbar--primary">
           <template #left>
             {{ $t("managers.profileAttributesManagement.title") }}
           </template>
           <template #right>
-            <KnFabButton icon="fas fa-plus" @click="showForm()" data-test="open-form-button"></KnFabButton>
+            <KnFabButton
+              icon="fas fa-plus"
+              @click="showForm()"
+              data-test="open-form-button"
+            ></KnFabButton>
           </template>
         </Toolbar>
         <ProgressBar
@@ -19,76 +23,13 @@
         <div class="kn-page-content p-grid p-m-0">
           <div v-if="!loading">
             <div class="p-col">
-              <DataTable
-                :value="attributes"
-                :paginator="true"
-                :rows="10"
-                selectionMode="single"
-                v-model:filters="filters"
-                filterDisplay="menu"
-                :globalFilterFields="profileAttributesManagementDescriptor.globalFilterFields"
-                @rowSelect="onAttributeSelect"
-                class="p-datatable-sm kn-table"
-                dataKey="id"
-                :rowsPerPageOptions="[10, 15, 20]"
-                responsiveLayout="stack"
-                breakpoint="960px"
-                data-test="attributes-table"
-                :currentPageReportTemplate="
-                  $t('common.table.footer.paginated', {
-                    first: '{first}',
-                    last: '{last}',
-                    totalRecords: '{totalRecords}',
-                  })">
-                  
-                <template #header>
-                  <div class="table-header">
-                    <span class="p-input-icon-left">
-                      <i class="pi pi-search" />
-                      <InputText
-                        class="kn-material-input"
-                        type="text"
-                        v-model="filters['global'].value"
-                        :placeholder="$t('common.search')"
-                        badge="0"
-                        data-test="search-input"
-                      />
-                    </span>
-                  </div>
-                </template>
-                <template #empty>
-                  {{ $t("common.info.noDataFound") }}
-                </template>
-                <template #loading v-if="loading">
-                  {{ $t("common.info.dataLoading") }}
-                </template>
-
-                <Column
-                  v-for="col of columns"
-                  :field="col.field"
-                  :header="col.header"
-                  :key="col.field"
-                  :style="profileAttributesManagementDescriptor.table.column.style"
-                  :sortable="true"
-                />
-
-                <Column :style="profileAttributesManagementDescriptor.table.iconColumn.style">
-                  <template #body="slotProps">
-                    <Button
-                      icon="pi pi-trash"
-                      class="p-button-text p-button-plain"
-                      @click="deleteAttribute(slotProps.data.attributeId)"
-                      :data-test="'delete-button'"
-                    />
-                  </template>
-                </Column>
-              </DataTable>
+              <AttributesListBox :attributes="attributes" :loading="loading" @deleteAttribute="onAttributeDelete" @selectedAttribute="onAttributeSelect" data-test="profile-attributes-listbox"></AttributesListBox>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="kn-list--column p-col-7 p-sm-12 p-md-7 p-p-0" :hidden="hideForm">
+      <div class="p-col-8 p-sm-8 p-md-9 p-p-0 p-m-0" :hidden="hideForm">
         <ProfileAttributesForm :selectedAttribute="attribute" @refreshRecordSet="loadAllAttributes" @closesForm="closeForm"></ProfileAttributesForm>
       </div>
     </div>
@@ -98,43 +39,29 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import axios from "axios";
-import Column from "primevue/column";
-import DataTable from "primevue/datatable";
 import KnFabButton from "@/components/UI/KnFabButton.vue";
-import { FilterMatchMode, FilterOperator } from "primevue/api";
 import ProfileAttributesManagementDescriptor from "./ProfileAttributesManagementDescriptor.json";
 import { iAttribute } from "./ProfileAttributesManagement";
 import ProfileAttributesForm from "./ProfileAttributesForm.vue";
+import AttributesListBox from "./AttributesListBox.vue";
 
 export default defineComponent({
   name: "profile-attributes",
   components: {
-    Column,
-    DataTable,
     KnFabButton,
     ProfileAttributesForm,
+    AttributesListBox,
   },
-  data() { 
+  data() {
     return {
       apiUrl: process.env.VUE_APP_RESTFUL_SERVICES_PATH + "2.0/",
       attributes: [] as iAttribute[],
       attribute: {} as iAttribute,
-      tempAttribute: {} as iAttribute, 
+      tempAttribute: {} as iAttribute,
       profileAttributesManagementDescriptor: ProfileAttributesManagementDescriptor,
       columns: ProfileAttributesManagementDescriptor.columns,
       loading: false,
       hideForm: false,
-      filters: {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        attributeName: {
-          operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }],
-        },
-        attributeDescription: {
-          operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }],
-        },
-      } as Object,
     };
   },
   async created() {
@@ -147,26 +74,30 @@ export default defineComponent({
         .get(this.apiUrl + "attributes")
         .then((response) => {
           this.attributes = response.data;
+          console.log(this.attributes);
         })
         .finally(() => (this.loading = false));
     },
-    onAttributeSelect(event: any) {
-      this.attribute = { ...event.data };
-      if(this.hideForm){
+    onAttributeSelect(attribute: iAttribute) {
+      this.attribute = { ...attribute };
+      if (this.hideForm) {
         this.hideForm = false;
       }
+    },
+    onAttributeDelete(id: number) {
+     this.deleteAttribute(id);
     },
     showForm() {
       this.hideForm = false;
       this.attribute = {
-        'attributeId' : null,
-        'attributeName' : '',
-        'attributeDescription': '',
-        'allowUser': null,
-        'multivalue': null,
-        'syntax': null,
-        'lovId': null,
-        'value': {}
+        attributeId: null,
+        attributeName: "",
+        attributeDescription: "",
+        allowUser: null,
+        multivalue: null,
+        syntax: null,
+        lovId: null,
+        value: {},
       };
     },
     closeForm() {
@@ -174,7 +105,8 @@ export default defineComponent({
     },
     async deleteAttribute(id: number) {
       this.$confirm.require({
-        message: this.$t("managers.profileAttributesManagement.confirmDeleteMessage",
+        message: this.$t(
+          "managers.profileAttributesManagement.confirmDeleteMessage",
           {
             item: "user",
           }
@@ -197,7 +129,7 @@ export default defineComponent({
             });
         },
       });
-    }
-  }
+    },
+  },
 });
 </script>
