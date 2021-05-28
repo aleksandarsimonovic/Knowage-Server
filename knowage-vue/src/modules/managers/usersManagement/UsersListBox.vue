@@ -10,7 +10,7 @@
     :filterFields="usersManagementDescriptor.globalFilterFields"
     :emptyFilterMessage="$t('managers.widgetGallery.noResults')"
     @change="onUserSelect"
-    data-test="metadata-list"
+    data-test="users-list"
   >
     <template #empty>{{ $t("common.info.noDataFound") }}</template>
     <template #option="slotProps">
@@ -24,7 +24,7 @@
         <Button
           icon="pi pi-trash"
           class="p-button-link p-button-sm"
-          @click="deleteUser(slotProps.option.id)"
+          @click="onUserDelete(slotProps.option.id)"
           :data-test="'delete-button'"
         />
       </div>
@@ -35,7 +35,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { iUser, iRole } from "./UsersManagement";
+import { iUser } from "./UsersManagement";
 
 import Listbox from "primevue/listbox";
 
@@ -46,7 +46,7 @@ export default defineComponent({
   components: {
     Listbox,
   },
-  emits: ["selectedUser"],
+  emits: ["selectedUser", "deleteUser"],
   props: {
     users: Array,
     loading: Boolean,
@@ -68,13 +68,15 @@ export default defineComponent({
       listUsers: [] as iUser[],
       load: false,
       selectedUser: null as iUser | null,
-      selectedRoles: [] as iRole[],
       usersManagementDescriptor: usersManagementDescriptor,
     };
   },
   methods: {
-    onUserSelect(event : any) {
+    onUserSelect(event: any) {
       this.$emit("selectedUser", event.value);
+    },
+    onUserDelete(id: number) {
+      this.$emit("deleteUser", id);
     },
   },
 });

@@ -19,7 +19,7 @@
         <div class="kn-page-content p-grid p-m-0">
           <div v-if="!loading">
             <div class="p-col">
-              <UsersListBox :users="users" :loading="loading" @selectedUser="onUserSelect" data-test="users-listbox"></UsersListBox>
+              <UsersListBox :users="users" :loading="loading" @selectedUser="onUserSelect" @deleteUser="onUserDelete" data-test="users-listbox"></UsersListBox>
             </div>
           </div>
         </div>
@@ -243,6 +243,9 @@ export default defineComponent({
     },
     setSelectedRoles(roles : iRole[]) {
       this.selectedRoles = roles;
+    },
+    onUserDelete(id: number) {
+     this.deleteUser(id);
     },
     async showForm() {
       this.tempAttributes = {};
