@@ -3,6 +3,7 @@ import configurationManagementRoutes from '@/modules/managers/configurationManag
 import usersManagementRoutes from '@/modules/managers/usersManagement/UsersManagement.routes.js'
 import domainsManagementRoutes from '@/modules/managers/domainsManagement/DomainsManagement.routes.js'
 import metadataManagementRoutes from '@/modules/managers/metadataManagement/MetadataManagement.routes.js'
+import profileAttributesRoutes from '@/modules/managers/profileAttributesManagement/ProfileAttributesManagement.routes.js'
 
 const baseRoutes = []
 
@@ -12,5 +13,6 @@ const routes = baseRoutes
     .concat(usersManagementRoutes)
     .concat(domainsManagementRoutes)
     .concat(metadataManagementRoutes)
+    .concat(profileAttributesRoutes)
 
 export default routes
