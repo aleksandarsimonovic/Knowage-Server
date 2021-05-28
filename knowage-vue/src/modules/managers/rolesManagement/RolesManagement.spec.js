@@ -98,8 +98,6 @@ describe('Roles Management loading', () => {
 
 describe('Roles Management', () => {
     it('deletes role after clicking on delete icon', async () => {
-        axios.get.mockImplementation(() => Promise.resolve({ data: mockedRoles }))
-
         const wrapper = factory()
         await flushPromises()
 
@@ -149,12 +147,12 @@ describe('Roles Management Search', () => {
         expect(rolesList.html()).toContain('user')
         expect(rolesList.html()).not.toContain('dev')
 
-        // Description
-        await searchInput.setValue('dev')
+        // Role Type
+        await searchInput.setValue('TEST_ROLE')
         await rolesList.trigger('filter')
         expect(rolesList.html()).not.toContain('/kte/admin')
-        expect(rolesList.html()).not.toContain('user')
-        expect(rolesList.html()).toContain('dev')
+        expect(rolesList.html()).toContain('user')
+        expect(rolesList.html()).not.toContain('dev')
     })
     it('returns no data if the label is not present', async () => {
         const wrapper = factory()

@@ -1,13 +1,3 @@
 {
-    "columns": [
-        {
-            "field": "name",
-            "header": "Name"
-        },
-        {
-            "field": "description",
-            "header": "Description"
-        }
-    ],
     "filterFields": ["name", "roleTypeCD"]
 }

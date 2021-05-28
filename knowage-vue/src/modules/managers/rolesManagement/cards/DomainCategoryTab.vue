@@ -35,6 +35,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { iCategory } from './../RolesManagement'
 import Card from 'primevue/card'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
@@ -56,16 +57,16 @@ export default defineComponent({
     data() {
         return {
             domainCategoryTabDescriptor,
-            selectedCategories: [] as any[]
+            selectedCategories: [] as iCategory[]
         }
     },
     watch: {
         selected() {
-            this.selectedCategories = this.selected as any[]
+            this.selectedCategories = this.selected as iCategory[]
         }
     },
     created() {
-        this.selectedCategories = this.selected as any[]
+        this.selectedCategories = this.selected as iCategory[]
     },
     methods: {
         setDirty() {

@@ -15,8 +15,6 @@ import TabPanel from 'primevue/tabpanel'
 import TabView from 'primevue/tabview'
 import Toolbar from 'primevue/toolbar'
 
-// TODO tests for detail
-
 const mockedBuissnesModelList = [
     {
         VALUE_NM: 'Default Model Category',
@@ -95,7 +93,6 @@ const mockedAuthorizations = [
         name: 'SEE_DOCUMENT_BROWSER'
     }
 ]
-
 const mockedRole = {
     id: 1,
     name: 'dev',
@@ -225,6 +222,12 @@ describe('Roles Management Tab View', () => {
 
         expect(wrapper.find('[role="tabpanel"]:nth-child(5)').html()).toContain('PRODUCT')
         expect(wrapper.vm.kpiCategoriesList).toStrictEqual(expectedKpiCategories)
+    })
+
+    it('save button is disabled if a mandatory input is empty', () => {
+        const wrapper = factory()
+        expect(wrapper.vm.selectedRole).toStrictEqual({})
+        expect(wrapper.vm.buttonDisabled).toBe(true)
     })
 
     it('loads correct role and shows succes info if it is saved', async () => {

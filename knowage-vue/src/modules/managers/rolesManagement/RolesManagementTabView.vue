@@ -1,6 +1,6 @@
 <template>
     <Toolbar class="kn-toolbar kn-toolbar--secondary p-m-0">
-        <template #left> Role: {{ selectedRole.name }} </template>
+        <template #left>{{ selectedRole.name }} </template>
         <template #right>
             <Button icon="pi pi-save" class="p-button-text p-button-rounded p-button-plain" @click="handleSubmit" :disabled="buttonDisabled" />
             <Button icon="pi pi-times" class="p-button-text p-button-rounded p-button-plain" @click="closeTemplate" />
@@ -70,6 +70,7 @@
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { iCategory, iRole } from './RolesManagement'
 import axios from 'axios'
 import Card from 'primevue/card'
 import TabView from 'primevue/tabview'
@@ -100,17 +101,17 @@ export default defineComponent({
     data() {
         return {
             rolesManagementTabViewDescriptor: rolesManagementTabViewDescriptor,
-            selectedBusinessModels: [] as any[], // praviti interfejs za ovo?!!
-            selectedDataSets: [] as any[],
-            selectedKPICategories: [] as any[],
-            selectedRole: {} as any,
+            selectedBusinessModels: [] as iCategory[],
+            selectedDataSets: [] as iCategory[],
+            selectedKPICategories: [] as iCategory[],
+            selectedRole: {} as iRole,
             roleMetaModelCategories: [] as any[],
             selectedCategories: [] as any[],
             authorizationList: [] as any,
             authorizationCBs: {} as any,
-            businessModelList: [] as any[],
-            dataSetList: [] as any[],
-            kpiCategoriesList: [] as any[],
+            businessModelList: [] as iCategory[],
+            dataSetList: [] as iCategory[],
+            kpiCategoriesList: [] as iCategory[],
             loading: false,
             operation: 'insert',
             v$: useValidate() as any
@@ -123,7 +124,7 @@ export default defineComponent({
     },
     watch: {
         id(value) {
-            value ? this.loadSelectedRole() : (this.selectedRole = {})
+            value ? this.loadSelectedRole() : (this.selectedRole = {} as iRole)
             this.clearSelectedLists()
         }
     },
@@ -131,7 +132,7 @@ export default defineComponent({
         await this.loadAllDomainsData()
         await this.loadSelectedRole()
         await this.loadAuthorizations()
-        await this.initAuthorizationCB()
+        this.initAuthorizationCB()
     },
     methods: {
         async handleSubmit() {
@@ -170,7 +171,6 @@ export default defineComponent({
                 .get(process.env.VUE_APP_RESTFUL_SERVICES_PATH + 'authorizations')
                 .then((response) => {
                     this.authorizationList = response.data.root
-                    console.log(this.authorizationList)
                     this.rolesManagementTabViewDescriptor.authorizations.forEach((authorization) => {
                         authorization.visible = this.authorizationList.findIndex((auth) => authorization.dbname === auth.name) >= 0
                     })
@@ -188,7 +188,7 @@ export default defineComponent({
                     this.businessModelList.push({
                         categoryId: category.VALUE_ID,
                         categoryName: category.VALUE_NM
-                    })
+                    } as iCategory)
                 })
             })
             await this.loadDomains('CATEGORY_TYPE').then((response) => {
@@ -196,7 +196,7 @@ export default defineComponent({
                     this.dataSetList.push({
                         categoryId: category.VALUE_ID,
                         categoryName: category.VALUE_NM
-                    })
+                    } as iCategory)
                 })
             })
             await this.loadDomains('KPI_KPI_CATEGORY').then((response) => {
@@ -204,7 +204,7 @@ export default defineComponent({
                     this.kpiCategoriesList.push({
                         categoryId: category.VALUE_ID,
                         categoryName: category.VALUE_NM
-                    })
+                    } as iCategory)
                 })
             })
         },
@@ -244,7 +244,7 @@ export default defineComponent({
             this.$router.push('/roles')
             this.$emit('closed')
         },
-        indexInList(category, list) {
+        indexInList(category: iCategory, list: iCategory[]) {
             return list.findIndex((element) => {
                 return element.categoryId === category.categoryId
             })
@@ -279,16 +279,16 @@ export default defineComponent({
                 })
             }
         },
-        setSelectedBusinessModels(value) {
-            this.selectedBusinessModels = value
+        setSelectedBusinessModels(categories: iCategory[]) {
+            this.selectedBusinessModels = categories
             this.$emit('touched')
         },
-        setSelectedDataSets(value) {
-            this.selectedDataSets = value
+        setSelectedDataSets(categories: iCategory[]) {
+            this.selectedDataSets = categories
             this.$emit('touched')
         },
-        setSelectedKPICategories(value) {
-            this.selectedKPICategories = value
+        setSelectedKPICategories(categories: iCategory[]) {
+            this.selectedKPICategories = categories
             this.$emit('touched')
         },
         onFieldChange(event) {

@@ -30,7 +30,7 @@
                             <div class="kn-list-item" data-test="list-item">
                                 <div class="kn-list-item-text">
                                     <span>{{ slotProps.option.name }}</span>
-                                    <span class="kn-list-item-text-secondary">{{ slotProps.option.description }}</span>
+                                    <span class="kn-list-item-text-secondary">{{ slotProps.option.roleTypeCD }}</span>
                                 </div>
                                 <Button icon="far fa-trash-alt" class="p-button-link p-button-sm" @click="deleteRoleConfirm(slotProps.option.id)" data-test="delete-button" />
                             </div>
@@ -48,8 +48,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { FilterMatchMode } from 'primevue/api'
-import { iRoles } from './RolesManagement'
+import { iRole } from './RolesManagement'
 import axios from 'axios'
 import rolesDecriptor from './RolesManagementDescriptor.json'
 import FabButton from '@/components/UI/KnFabButton.vue'
@@ -63,23 +62,14 @@ export default defineComponent({
     },
     data() {
         return {
-            roles: [] as iRoles[],
-            authorizationList: [],
-            businessModelList: [],
-            dataSetList: [],
-            kpiCategoriesList: [],
+            roles: [] as iRole[],
             loading: false,
             touched: false,
             rolesDecriptor: rolesDecriptor,
-            columns: rolesDecriptor.columns,
-            filters: {
-                global: { value: null, matchMode: FilterMatchMode.CONTAINS }
-            } as Object,
             hiddenForm: false,
             dirty: false
         }
     },
-
     async created() {
         await this.loadAllRoles()
     },
@@ -135,9 +125,3 @@ export default defineComponent({
     }
 })
 </script>
-
-<style lang="scss" scoped>
-.column-header {
-    color: $color-primary !important;
-}
-</style>

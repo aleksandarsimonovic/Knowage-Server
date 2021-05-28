@@ -15,6 +15,7 @@
                             maxLength="100"
                             @blur="v$.role.name.$touch()"
                             @input="onFieldChange('name', $event.target.value)"
+                            data-test="name-input"
                         />
                         <label for="name" class="kn-material-input-label"> {{ $t('managers.rolesManagement.detail.name') }} * </label>
                     </span>
@@ -39,6 +40,7 @@
                             maxLength="20"
                             @blur="v$.role.code.$touch()"
                             @input="onFieldChange('code', $event.target.value)"
+                            data-test="code-input"
                         />
                         <label for="code" class="kn-material-input-label">
                             {{ $t('managers.rolesManagement.detail.code') }}
@@ -65,6 +67,7 @@
                             maxLength="225"
                             @blur="v$.role.description.$touch()"
                             @input="onFieldChange('description', $event.target.value)"
+                            data-test="description-input"
                         />
                         <label for="description" class="kn-material-input-label">
                             {{ $t('managers.rolesManagement.detail.description') }}
@@ -106,7 +109,7 @@
 
                 <div class="p-field" :style="rolesManagementTabViewDescriptor.pField.style">
                     <span class="p-field-checkbox">
-                        <Checkbox id="isPublic" name="isPublic" v-model="role.isPublic" @change="onPublicChange('isPublic')" :binary="true" />
+                        <Checkbox id="isPublic" name="isPublic" v-model="role.isPublic" @change="onPublicChange('isPublic')" :binary="true" data-test="is-public-checkbox" />
                         <label for="isPublic">
                             {{ $t('managers.rolesManagement.detail.isPublic') }}
                         </label>
@@ -184,6 +187,7 @@ export default defineComponent({
     },
     watch: {
         selectedRole() {
+            this.v$.$reset();
             this.role = { ...this.selectedRole } as any
         }
     },
