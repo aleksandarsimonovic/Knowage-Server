@@ -35,7 +35,6 @@
 		"new": "new",
 		"save": "save",
 		"search": "search",
-		"selectAll": "Select All",
 		"table": {
 			"footer": {
 				"paginated": "Showing {first} to {last} of {totalRecords}"

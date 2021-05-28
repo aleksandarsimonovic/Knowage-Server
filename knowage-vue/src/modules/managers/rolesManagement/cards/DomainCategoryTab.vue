@@ -3,16 +3,20 @@
         <template #header>
             <Toolbar class="kn-toolbar kn-toolbar--secondary">
                 <template #left>
-                    {{ $t('managers.rolesManagement.businessModels') + ' ' + $t('managers.rolesManagement.categories') }}
+                    {{ title }}
                 </template>
             </Toolbar>
         </template>
         <template #content>
-            <DataTable :value="categoryList" v-model:selection="selectedCategories" class="p-datatable-sm kn-table" dataKey="categoryId" :paginator="true" :rows="20" responsiveLayout="stack" breakpoint="960px" @rowSelect="setDirty()" @rowUnselect="setDirty()">
+            <DataTable :value="categoryList" v-model:selection="selectedCategories" 
+            class="p-datatable-sm kn-table" dataKey="categoryId" 
+            :paginator="true" :rows="20" responsiveLayout="stack" 
+            breakpoint="960px" 
+            @rowSelect="setDirty" @rowUnselect="setDirty" @rowSelectAll="setDirty" @rowUnselectAll="setDirty" data-test="data-table">
                 <template #empty>
                     {{ $t('common.info.noDataFound') }}
                 </template>
-                <Column selectionMode="multiple" :header="$t('common.selectAll')" :style="domainCategoryTabDescriptor.column.style" dataKey="categoryId"></Column>
+                <Column selectionMode="multiple" :style="domainCategoryTabDescriptor.column.style" dataKey="categoryId"></Column>
                 <Column field="categoryName" :header="$t('common.name')" :style="domainCategoryTabDescriptor.column.header.style"></Column>
             </DataTable>
         </template>
@@ -34,6 +38,7 @@ export default defineComponent({
         DataTable
     },
     props: {
+        title: String,
         categoryList: Array,
         selected: Array
     },
@@ -55,9 +60,6 @@ export default defineComponent({
     methods: {
         setDirty() {
             this.$emit('changed', this.selectedCategories)
-        },
-        test() {
-            console.log('CALLED');
         }
     }
 })
