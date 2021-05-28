@@ -13,7 +13,8 @@
                 <template #header>
                     <span>{{ $t('managers.rolesManagement.detail.title') }}</span>
                 </template>
-                <RoleDetailTab :selectedRole="selectedRole" @fieldChanged="onFieldChange" @roleTypeChanged="onRoleTypeChange" @publicChanged="onPublicChange" />  
+
+                <RoleDetailTab :selectedRole="selectedRole" @fieldChanged="onFieldChange" @roleTypeChanged="onRoleTypeChange" />
             </TabPanel>
 
             <TabPanel>
@@ -21,25 +22,7 @@
                     <span>{{ $t('managers.rolesManagement.authorizations.title') }}</span>
                 </template>
 
-                <Card>
-                    <template #content>
-                        <div v-for="(category, index) of rolesManagementTabViewDescriptor.categories" :key="index">
-                            <template v-if="authorizationCBs[category.categoryName] && authorizationCBs[category.categoryName].length">
-                                <Toolbar class="kn-toolbar kn-toolbar--secondary">
-                                    <template #left>
-                                        {{ $t(category.name) }}
-                                    </template>
-                                </Toolbar>
-                                <div v-for="(authCBInfo, index) of authorizationCBs[category.categoryName]" :key="index">
-                                    <div class="p-field-checkbox p-m-3">
-                                        <Checkbox id="binary" v-model="selectedRole[authCBInfo.fieldName]" :binary="true" :disabled="authCBInfo.enableForRole && !authCBInfo.enableForRole.includes(selectedRole.roleTypeID)" />
-                                        <label for="binary">{{ $t(authCBInfo.label) }}</label>
-                                    </div>
-                                </div>
-                            </template>
-                        </div>
-                    </template>
-                </Card>
+                <RoleAuthorizationsTab :selectedRole="selectedRole" :authList="authorizationList" :authCBs="authorizationCBs" @authChanged="onFieldChange" />
             </TabPanel>
 
             <TabPanel>
@@ -72,24 +55,21 @@
 import { defineComponent } from 'vue'
 import { iCategory, iRole } from './RolesManagement'
 import axios from 'axios'
-import Card from 'primevue/card'
 import TabView from 'primevue/tabview'
 import TabPanel from 'primevue/tabpanel'
-import Checkbox from 'primevue/checkbox'
 import rolesManagementTabViewDescriptor from './RolesManagementTabViewDescriptor.json'
 import useValidate from '@vuelidate/core'
 import DomainCategoryTab from './cards/DomainCategoryTab.vue'
 import RoleDetailTab from './cards/RoleDetailTab.vue'
-
+import RoleAuthorizationsTab from './cards/RoleAuthorizationsTab.vue'
 
 export default defineComponent({
     components: {
-        Card,
         DomainCategoryTab,
-        Checkbox,
         RoleDetailTab,
         TabView,
-        TabPanel
+        TabPanel,
+        RoleAuthorizationsTab
     },
     props: {
         id: {
@@ -298,10 +278,6 @@ export default defineComponent({
         onRoleTypeChange(event) {
             this.selectedRole[event.roleTypeIDField] = event.ID
             this.selectedRole[event.roleTypeCDField] = event.CD
-            this.$emit('touched')
-        },
-        onPublicChange(event) {
-            this.selectedRole.isPublic = event.isPublic
             this.$emit('touched')
         }
     }

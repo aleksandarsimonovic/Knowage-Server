@@ -109,7 +109,7 @@
 
                 <div class="p-field" :style="rolesManagementTabViewDescriptor.pField.style">
                     <span class="p-field-checkbox">
-                        <Checkbox id="isPublic" name="isPublic" v-model="role.isPublic" @change="onPublicChange('isPublic')" :binary="true" data-test="is-public-checkbox" />
+                        <Checkbox id="isPublic" name="isPublic" v-model="role.isPublic" @change="onFieldChange('isPublic', role.isPublic)" :binary="true" data-test="is-public-checkbox" />
                         <label for="isPublic">
                             {{ $t('managers.rolesManagement.detail.isPublic') }}
                         </label>
@@ -150,14 +150,14 @@ export default defineComponent({
             requried: false
         }
     },
-    emits: ['changed', 'fieldChanged', 'roleTypeChanged', 'publicChanged'],
+    emits: ['fieldChanged', 'roleTypeChanged'],
     data() {
         return {
             rolesManagementTabViewDescriptor,
-            role: {} as any,
+            translatedRoleTypes: [] as any,
             v$: useValidate() as any,
             roleTypes: [] as any,
-            translatedRoleTypes: [] as any
+            role: {} as any
         }
     },
     validations() {
@@ -179,7 +179,7 @@ export default defineComponent({
             }
         }
     },
-    async mounted() {
+    async created() {
         if (this.selectedRole) {
             this.role = { ...this.selectedRole } as any
         }
@@ -187,7 +187,7 @@ export default defineComponent({
     },
     watch: {
         selectedRole() {
-            this.v$.$reset();
+            this.v$.$reset()
             this.role = { ...this.selectedRole } as any
         }
     },
@@ -219,12 +219,6 @@ export default defineComponent({
             const ID = event.value
             const CD = this.role.roleTypeCD
             this.$emit('roleTypeChanged', { roleTypeIDField, roleTypeCDField, ID, CD })
-        },
-        //Moram ovako da saljem value posto ga nema u eventu iz nekog razloga
-        onPublicChange(fieldName: string) {
-            const isPublic = this.role.isPublic
-            console.log(isPublic)
-            this.$emit('publicChanged', { fieldName, isPublic })
         }
     }
 })
