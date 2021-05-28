@@ -1,17 +1,13 @@
 <template>
   <div class="kn-page">
     <div class="kn-page-content p-grid p-m-0">
-      <div class="kn-list--column p-col-5 p-sm-12 p-md-5 p-p-0">
+      <div class="kn-list--column p-col-4 p-sm-4 p-md-3 p-p-0">
         <Toolbar class="kn-toolbar kn-toolbar--primary">
           <template #left>
             {{ $t("managers.usersManagement.title") }}
           </template>
           <template #right>
-            <KnFabButton
-              icon="fas fa-plus"
-              @click="showForm()"
-              data-test="open-form-button"
-            ></KnFabButton>
+            <KnFabButton icon="fas fa-plus" @click="showForm()" data-test="open-form-button"></KnFabButton>
           </template>
         </Toolbar>
         <ProgressBar
@@ -23,92 +19,13 @@
         <div class="kn-page-content p-grid p-m-0">
           <div v-if="!loading">
             <div class="p-col">
-              <DataTable
-                :value="users"
-                :paginator="true"
-                :rows="10"
-                v-model:selection="selectedUser"
-                selectionMode="single"
-                @rowSelect="onUserSelect"
-                class="p-datatable-sm kn-table"
-                dataKey="id"
-                v-model:filters="filters"
-                :globalFilterFields="
-                  usersManagementDescriptor.globalFilterFields
-                "
-                filterDisplay="menu"
-                :rowsPerPageOptions="[10, 15, 20]"
-                responsiveLayout="stack"
-                breakpoint="960px"
-                data-test="users-table"
-                :currentPageReportTemplate="
-                  $t('common.table.footer.paginated', {
-                    first: '{first}',
-                    last: '{last}',
-                    totalRecords: '{totalRecords}',
-                  })
-                "
-              >
-                <template #header>
-                  <div class="table-header">
-                    <span class="p-input-icon-left">
-                      <i class="pi pi-search" />
-                      <InputText
-                        class="kn-material-input"
-                        type="text"
-                        v-model="filters['global'].value"
-                        :placeholder="$t('common.search')"
-                        badge="0"
-                        data-test="search-input"
-                      />
-                    </span>
-                  </div>
-                </template>
-                <template #empty>
-                  {{ $t("common.info.noDataFound") }}
-                </template>
-                <template #loading v-if="loading">
-                  {{ $t("common.info.dataLoading") }}
-                </template>
-
-                <Column
-                  v-for="col of columns"
-                  :field="col.field"
-                  :header="col.header"
-                  :key="col.field"
-                  :style="usersManagementDescriptor.table.column.style"
-                  :sortable="true"
-                >
-                  <template #filter="{ filterModel }">
-                    <InputText
-                      type="text"
-                      v-model="filterModel.value"
-                      class="p-column-filter"
-                    ></InputText>
-                  </template>
-                </Column>
-                <Column :style="usersManagementDescriptor.table.iconColumn.style">
-                  <template #body="slotProps">
-                    <Button
-                      v-if="slotProps.data.failedLoginAttempts >= 3"
-                      icon="pi pi-lock"
-                      class="p-button-danger p-button-text"
-                    />
-                    <Button
-                      icon="pi pi-trash"
-                      class="p-button-text p-button-plain"
-                      @click="deleteUser(slotProps.data.id)"
-                      :data-test="'delete-button'"
-                    />
-                  </template>
-                </Column>
-              </DataTable>
+              <UsersListBox :users="users" :loading="loading" @selectedUser="onUserSelect" data-test="users-listbox"></UsersListBox>
             </div>
           </div>
         </div>
       </div>
-
-      <div class="kn-list--column p-col-7 p-sm-12 p-md-7 p-p-0" :hidden="hiddenForm">
+      
+      <div class="p-col-8 p-sm-8 p-md-9 p-p-0 p-m-0" :hidden="hiddenForm">
         <Toolbar class="kn-toolbar kn-toolbar--secondary">
           <template #left>
             {{ userDetailsForm.userId }}
@@ -165,9 +82,7 @@
                 <template #header>
                   <Toolbar class="kn-toolbar kn-toolbar--secondary">
                     <template #left>
-                      {{
-                        $t("managers.usersManagement.attributes").toUpperCase()
-                      }}
+                      {{ $t("managers.usersManagement.attributes").toUpperCase() }}
                     </template>
                   </Toolbar>
                 </template>
@@ -206,28 +121,23 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { FilterMatchMode, FilterOperator } from "primevue/api";
 import { iUser, iRole, iAttribute } from "./UsersManagement";
 import UserService from "./UserService";
 import { required, requiredIf, sameAs, minLength, helpers } from "@vuelidate/validators";
 import useValidate from "@vuelidate/core";
-
 import axios from "axios";
-import Column from "primevue/column";
-import DataTable from "primevue/datatable";
 import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
 import KnFabButton from "@/components/UI/KnFabButton.vue";
 import RolesTab from "./RolesTab.vue";
 import DetailFormTab from "./DetailFormTab.vue";
-
+import UsersListBox from "./UsersListBox.vue";
 import usersManagementDescriptor from "./UsersManagementDescriptor.json";
 import usersManagementRolesDescriptor from "./UsersManagementRolesDescriptor.json";
 export default defineComponent({
   name: "user-management",
   components: {
-    Column,
-    DataTable,
+    UsersListBox,
     TabView,
     TabPanel,
     KnFabButton,
@@ -253,21 +163,9 @@ export default defineComponent({
       usersManagementRolesDescriptor: usersManagementRolesDescriptor,
       columns: usersManagementDescriptor.columns,
       rolesColumns: usersManagementRolesDescriptor.columns,
-      filters: {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        userId: {
-          operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }],
-        },
-        fullName: {
-          operator: FilterOperator.AND,
-          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }],
-        },
-      } as Object,
       hiddenForm: true,
       disableUsername: true,
       loading: false,
-      selectedUser: null as iUser | null,
       selectedRoles: [] as iRole[],
     };
   },
@@ -431,10 +329,8 @@ export default defineComponent({
         icon: "pi pi-exclamation-triangle",
         accept: async () => {
           this.loading = true;
-
           try {
             let response = await this.userService.delete(id);
-
             if (response) {
               this.loadAllUsers();
               this.hiddenForm = true;
@@ -450,11 +346,10 @@ export default defineComponent({
       this.userDetailsForm.failedLoginAttempts = 0;
       await this.saveUser();
     },
-    async onUserSelect(event: any) {
+    async onUserSelect(userSelected: any) {
       this.formInsert = false;
       let formAttributes = this.formatedAttributesFormValues();
-      this.isDirtyAttributes =
-        JSON.stringify(formAttributes) !== JSON.stringify(this.tempAttributes);
+      this.isDirtyAttributes = JSON.stringify(formAttributes) !== JSON.stringify(this.tempAttributes);
 
       if (this.isDirtyAttributes) {
         this.$confirm.require({
@@ -462,14 +357,14 @@ export default defineComponent({
           header: this.$t("managers.usersManagement.unsavedChangesHeader"),
           icon: "pi pi-exclamation-triangle",
           accept: () => {
-            this.populateForms(event.data);
+            this.populateForms(userSelected);
           },
           reject: () => {
             this.isDirtyAttributes = false;
           },
         });
       } else {
-        this.populateForms(event.data);
+        this.populateForms(userSelected);
       }
     },
     populateForms(userObj: any) {
@@ -515,7 +410,6 @@ export default defineComponent({
       this.attributesForm[attr] = "";
     },
     closeForm() {
-      this.selectedUser = null;
       this.hiddenForm = true;
     },
   },
