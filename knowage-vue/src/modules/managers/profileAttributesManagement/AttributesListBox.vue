@@ -24,14 +24,13 @@
         <Button
           icon="pi pi-trash"
           class="p-button-link p-button-sm"
-          @click="deleteAttribute(slotProps.option.id)"
+          @click="deleteAttribute(slotProps.option.attributeId)"
           :data-test="'delete-button'"
         />
       </div>
     </template>
   </Listbox>
 </template>
-
 
 <script lang="ts">
 import { defineComponent } from "vue";
@@ -46,7 +45,7 @@ export default defineComponent({
   },
   emits: ["selectedAttribute", "deleteAttribute"],
   props: {
-    attributes: Array,
+    attributes: Object,
     loading: Boolean,
   },
   watch: {
@@ -70,11 +69,10 @@ export default defineComponent({
     };
   },
   methods: {
-    deleteAttribute(id: number) {
-      this.$emit("deleteAttribute", id);
+    deleteAttribute(attributeId: number) {
+      this.$emit("deleteAttribute", attributeId);
     },
     onAttributeSelect(event: any) {
-      console.log(event);
       this.$emit("selectedAttribute", event.value);
     },
   },

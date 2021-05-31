@@ -1,5 +1,5 @@
 <template>
- <div class="kn-page">
+  <div class="kn-page">
     <div class="kn-page-content p-grid p-m-0">
       <div class="kn-list--column p-col-4 p-sm-4 p-md-3 p-p-0">
         <Toolbar class="kn-toolbar kn-toolbar--primary">
@@ -7,11 +7,7 @@
             {{ $t("managers.profileAttributesManagement.title") }}
           </template>
           <template #right>
-            <KnFabButton
-              icon="fas fa-plus"
-              @click="showForm()"
-              data-test="open-form-button"
-            ></KnFabButton>
+            <KnFabButton icon="fas fa-plus" @click="showForm()" data-test="open-form-button"></KnFabButton>
           </template>
         </Toolbar>
         <ProgressBar
@@ -20,17 +16,21 @@
           v-if="loading"
           data-test="progress-bar"
         />
-        <div class="kn-page-content p-grid p-m-0">
-          <div v-if="!loading">
-            <div class="p-col">
-              <AttributesListBox :attributes="attributes" :loading="loading" @deleteAttribute="onAttributeDelete" @selectedAttribute="onAttributeSelect" data-test="profile-attributes-listbox"></AttributesListBox>
-            </div>
-          </div>
-        </div>
+        <AttributesListBox
+          :attributes="attributes"
+          :loading="loading"
+          @deleteAttribute="onAttributeDelete"
+          @selectedAttribute="onAttributeSelect"
+          data-test="profile-attributes-listbox"
+        ></AttributesListBox>
       </div>
 
       <div class="p-col-8 p-sm-8 p-md-9 p-p-0 p-m-0" :hidden="hideForm">
-        <ProfileAttributesForm :selectedAttribute="attribute" @refreshRecordSet="loadAllAttributes" @closesForm="closeForm"></ProfileAttributesForm>
+        <ProfileAttributesForm
+          :selectedAttribute="attribute"
+          @refreshRecordSet="loadAllAttributes"
+          @closesForm="closeForm"
+        ></ProfileAttributesForm>
       </div>
     </div>
   </div>
@@ -41,9 +41,9 @@ import { defineComponent } from "vue";
 import axios from "axios";
 import KnFabButton from "@/components/UI/KnFabButton.vue";
 import ProfileAttributesManagementDescriptor from "./ProfileAttributesManagementDescriptor.json";
-import { iAttribute } from "./ProfileAttributesManagement";
 import ProfileAttributesForm from "./ProfileAttributesForm.vue";
 import AttributesListBox from "./AttributesListBox.vue";
+import { iAttribute } from "./ProfileAttributesManagement";
 
 export default defineComponent({
   name: "profile-attributes",
@@ -60,8 +60,8 @@ export default defineComponent({
       tempAttribute: {} as iAttribute,
       profileAttributesManagementDescriptor: ProfileAttributesManagementDescriptor,
       columns: ProfileAttributesManagementDescriptor.columns,
-      loading: false,
-      hideForm: false,
+      loading: false as Boolean,
+      hideForm: false as Boolean,
     };
   },
   async created() {
@@ -74,7 +74,6 @@ export default defineComponent({
         .get(this.apiUrl + "attributes")
         .then((response) => {
           this.attributes = response.data;
-          console.log(this.attributes);
         })
         .finally(() => (this.loading = false));
     },
@@ -85,7 +84,7 @@ export default defineComponent({
       }
     },
     onAttributeDelete(id: number) {
-     this.deleteAttribute(id);
+      this.deleteAttribute(id);
     },
     showForm() {
       this.hideForm = false;
@@ -108,7 +107,7 @@ export default defineComponent({
         message: this.$t(
           "managers.profileAttributesManagement.confirmDeleteMessage",
           {
-            item: "user",
+            item: "attribute",
           }
         ),
         header: this.$t("common.confirmation"),

@@ -8,7 +8,7 @@
         icon="pi pi-save"
         class="kn-button p-button-text p-button-rounded"
         @click="save"
-        :disabled="v$.attribute.$invalid"
+        :disabled="formValid"
       />
       <Button
         class="kn-button p-button-text p-button-rounded"
@@ -44,6 +44,9 @@
             <div v-if="v$.attribute.attributeName.$invalid && v$.attribute.attributeName.$dirty" class="p-error">
               <small v-if="v$.attribute.attributeName.required.$invalid">{{ v$.attribute.attributeName.required.$message }}</small>
             </div>
+            <div v-if="v$.attribute.attributeName.$invalid && v$.attribute.attributeName.$dirty" class="p-error">
+              <small v-if="v$.attribute.attributeName.maximumCharacters.$invalid">{{ v$.attribute.attributeName.maximumCharacters.$message }}</small>
+            </div>
           </div>
 
           <div class="p-field">
@@ -62,6 +65,9 @@
 
             <div v-if="v$.attribute.attributeDescription.$invalid && v$.attribute.attributeDescription.$dirty" class="p-error">
               <small v-if="v$.attribute.attributeDescription.required.$invalid">{{ v$.attribute.attributeDescription.required.$message }}</small>
+            </div>
+            <div v-if="v$.attribute.attributeDescription.$invalid && v$.attribute.attributeDescription.$dirty" class="p-error">
+              <small v-if="v$.attribute.attributeDescription.maximumCharacters.$invalid">{{ v$.attribute.attributeDescription.maximumCharacters.$message }}</small>
             </div>
           </div>
 
@@ -148,8 +154,16 @@ import InputSwitch from "primevue/inputswitch";
 import RadioButton from "primevue/radiobutton";
 import ProfileAttributesManagementDescriptor from "./ProfileAttributesManagementDescriptor.json";
 import { iAttribute, iLov } from "./ProfileAttributesManagement";
-import { required, helpers } from "@vuelidate/validators";
+import { required, maxLength, helpers } from "@vuelidate/validators";
 import useValidate from "@vuelidate/core";
+import { extendedAlphanumeric } from '@/helpers/commons/regexHelper';
+const regex = (value: any) => {
+  return extendedAlphanumeric.test(value);
+};
+const attributeNamePattern = (value: any) => {
+  // eslint-disable-next-line no-useless-escape
+  return /^([a-zA-Z0-9\s\-\_])*$/.test(value);
+};
 
 export default defineComponent({
   name: "profile-attributes-form",
@@ -163,6 +177,11 @@ export default defineComponent({
       type: Object,
       requried: true,
     },
+  },
+    computed: {
+    formValid(): any {
+      return this.v$.$invalid;
+    }
   },
   watch: {
     selectedAttribute: {
@@ -208,23 +227,42 @@ export default defineComponent({
       profileAttributesManagementDescriptor: ProfileAttributesManagementDescriptor,
       columns: ProfileAttributesManagementDescriptor.columns,
       attributeTypeValues: ProfileAttributesManagementDescriptor.attributeTypeValues,
-      headers: ProfileAttributesManagementDescriptor.headers,
-      loading: false,
-      hideForm: false,
-      isDirty: false,
-      disableLov: true,
-      enableLov: true,
-      LovSelectHidden: true,
+      loading: false as Boolean,
+      hideForm: false as Boolean,
+      isDirty: false as Boolean,
+      disableLov: true as Boolean,
+      enableLov: true as Boolean,
+      LovSelectHidden: true as Boolean,
     };
   },
   validations() {
     return {
       attribute: {
         attributeName: {
-          required: helpers.withMessage(this.$t("common.validation.required"), required),
+          required: helpers.withMessage(
+            this.$t("common.validation.required"),
+            required
+          ),
+          attributeNamePattern,
+          maximumCharacters: helpers.withMessage(
+            this.$t("common.validation.maximumCharacters", {
+              length: 255,
+            }),
+            maxLength(255)
+          ),
         },
         attributeDescription: {
-          required: helpers.withMessage(this.$t("common.validation.required"), required),
+          required: helpers.withMessage(
+            this.$t("common.validation.required"),
+            required
+          ),
+          regex,
+          maximumCharacters: helpers.withMessage(
+            this.$t("common.validation.maximumCharacters", {
+              length: 500,
+            }),
+            maxLength(500)
+          ),
         },
         value: {},
         lov: {},
@@ -262,13 +300,13 @@ export default defineComponent({
         response = await axios.put(
           this.apiUrl + "attributes/" + this.attribute.attributeId,
           this.attribute,
-          this.headers
+          ProfileAttributesManagementDescriptor.headers
         );
       } else {
         response = await axios.post(
           this.apiUrl + "attributes/",
           this.attribute,
-          this.headers
+          ProfileAttributesManagementDescriptor.headers
         );
       }
       if (response.status == 200) {
@@ -284,32 +322,6 @@ export default defineComponent({
 
       this.$emit("refreshRecordSet");
       this.resetForm();
-    },
-    async deleteAttribute(id: number) {
-      this.$confirm.require({
-        message: this.$t("managers.profileAttributesManagement.confirmDeleteMessage",
-          {
-            item: "attribute",
-          }
-        ),
-        header: this.$t("common.confirmation"),
-        icon: "pi pi-exclamation-triangle",
-        accept: async () => {
-          this.loading = true;
-          this.axios
-            .delete(this.apiUrl + "attributes/" + id)
-            .then(() => {
-              this.$store.commit("setInfo", {
-                title: this.$t("managers.profileAttributesManagement.info.deleteTitle"),
-                msg: this.$t("managers.profileAttributesManagement.info.deleteMessage"),
-              });
-              this.$emit("refreshRecordSet");
-            })
-            .finally(() => {
-              this.loading = false;
-            });
-        },
-      });
     },
     closeForm() {
       this.$emit("closesForm");

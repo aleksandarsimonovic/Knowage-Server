@@ -96,27 +96,27 @@ describe("ProfileAttributes Management loading", () => {
     const wrapper = factory();
     await flushPromises();
     expect(wrapper.vm.attributes.length).toBe(0);
-    expect(wrapper.find('[data-test="attributes-table"]').html()).toContain(
-      "common.info.noDataFound"
-    );
+    expect(
+      wrapper.find('[data-test="profile-attributes-listbox"]').html()
+    ).toContain("common.info.noDataFound");
   });
 });
 
-describe("ProfileAttributes Management", () => {
+describe("Profile Attributes Management", () => {
   it("opens empty form when the '+' button is clicked", async () => {
     const wrapper = factory();
     const openButton = wrapper.find('[data-test="open-form-button"]');
     await openButton.trigger("click");
-    expect(wrapper.vm.showForm).toBe(true);
+    expect(wrapper.vm.hideForm).toBe(false);
   });
 
   it("shows form when a row is clicked", async () => {
     const wrapper = factory();
     await flushPromises();
-    const dataTable = wrapper.find('[data-test="attributes-table"]');
-    await dataTable.find("tr td").trigger("click");
+    const dataTable = wrapper.find('[data-test="profile-attributes-listbox"]');
+    await dataTable.find("ul li").trigger("click");
 
-    expect(wrapper.vm.showForm).toBe(false);
+    expect(wrapper.vm.hideForm).toBe(false);
     expect(wrapper.vm.attribute).toStrictEqual({
       attributeId: 3,
       attributeName: "address",
@@ -127,5 +127,53 @@ describe("ProfileAttributes Management", () => {
       lovId: null,
       value: null,
     });
+  });
+});
+
+describe("Profille Attributes Management Search", () => {
+  it("filters the list if a label or name is provided", async () => {
+    const wrapper = factory();
+    await flushPromises();
+    const attributesListBox = wrapper.find(
+      '[data-test="profile-attributes-listbox"]'
+    );
+    const searchInput = attributesListBox.find("input");
+
+    expect(attributesListBox.html()).toContain("address");
+    expect(attributesListBox.html()).toContain("birth_date");
+    expect(attributesListBox.html()).toContain("email");
+
+    // attributeName
+    await searchInput.setValue("email");
+    await attributesListBox.trigger("filter");
+    expect(attributesListBox.html()).toContain("email");
+    expect(attributesListBox.html()).not.toContain("address");
+    expect(attributesListBox.html()).not.toContain("birth_date");
+
+    // attributeDescription
+    await searchInput.setValue("birth_date");
+    await attributesListBox.trigger("filter");
+    expect(attributesListBox.html()).not.toContain("address");
+    expect(attributesListBox.html()).not.toContain("email");
+    expect(attributesListBox.html()).toContain("birth_date");
+  });
+  it("returns no data if the label is not present", async () => {
+    const wrapper = factory();
+    await flushPromises();
+    const attributesListBox = wrapper.find(
+      '[data-test="profile-attributes-listbox"]'
+    );
+    const searchInput = attributesListBox.find("input");
+
+    expect(attributesListBox.html()).toContain("address");
+    expect(attributesListBox.html()).toContain("email");
+    expect(attributesListBox.html()).toContain("birth_date");
+
+    await searchInput.setValue("not present value");
+    await attributesListBox.trigger("filter");
+
+    expect(attributesListBox.html()).not.toContain("birth_date");
+    expect(attributesListBox.html()).not.toContain("email");
+    expect(attributesListBox.html()).not.toContain("address");
   });
 });
