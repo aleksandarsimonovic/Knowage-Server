@@ -6,7 +6,7 @@
             <Button icon="pi pi-times" class="p-button-text p-button-rounded p-button-plain" @click="closeTemplate" />
         </template>
     </Toolbar>
-
+    <ProgressBar mode="indeterminate" class="kn-progress-bar" v-if="loading"/>
     <div class="card">
         <TabView class="tabview-custom" data-test="tab-view">
             <TabPanel>
@@ -163,6 +163,7 @@ export default defineComponent({
             })
         },
         async loadAllDomainsData() {
+            this.loading = true;
             await this.loadDomains('BM_CATEGORY').then((response) => {
                 response.data.map((category: any) => {
                     this.businessModelList.push({
@@ -187,8 +188,10 @@ export default defineComponent({
                     } as iCategory)
                 })
             })
+            this.loading = false;
         },
         async loadSelectedRole() {
+            this.loading = true;
             if (this.id) {
                 await axios.get(process.env.VUE_APP_RESTFUL_SERVICES_PATH + `2.0/roles/${this.id}`).then((response) => (this.selectedRole = response.data))
 
@@ -216,6 +219,7 @@ export default defineComponent({
                     })
                 })
             }
+            this.loading = false;
         },
         setDirty() {
             this.$emit('touched')

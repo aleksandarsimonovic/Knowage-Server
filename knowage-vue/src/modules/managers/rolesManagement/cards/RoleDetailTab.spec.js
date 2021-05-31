@@ -18,10 +18,9 @@ const mockedRole = {
     isPublic: true
 }
 
-
 jest.mock('axios')
 
-axios.get.mockImplementation(() => Promise.resolve({ data: []}))
+axios.get.mockImplementation(() => Promise.resolve({ data: [] }))
 
 const factory = () => {
     return mount(RoleDetailTab, {
@@ -57,19 +56,19 @@ describe('Role Detail Tab', () => {
 
     it('emits correct value on input change', async () => {
         const wrapper = factory()
-        await flushPromises();
+        await flushPromises()
 
         const nameInput = wrapper.find('[data-test="name-input"]')
         const codeInput = wrapper.find('[data-test="code-input"]')
         const descriptionInput = wrapper.find('[data-test="description-input"]')
 
-        await nameInput.setValue('test name');
-        expect(wrapper.emitted().fieldChanged[0][0].value).toBe('test name');
+        await nameInput.setValue('test name')
+        expect(wrapper.emitted().fieldChanged[0][0].value).toBe('test name')
 
-         await codeInput.setValue('test code')
-         expect(wrapper.emitted().fieldChanged[1][0].value).toBe('test code')
+        await codeInput.setValue('test code')
+        expect(wrapper.emitted().fieldChanged[1][0].value).toBe('test code')
 
-          await descriptionInput.setValue('test description')
-          expect(wrapper.emitted().fieldChanged[2][0].value).toBe('test description')
+        await descriptionInput.setValue('test description')
+        expect(wrapper.emitted().fieldChanged[2][0].value).toBe('test description')
     })
 })

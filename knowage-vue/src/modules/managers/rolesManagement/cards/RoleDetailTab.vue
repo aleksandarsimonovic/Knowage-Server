@@ -10,7 +10,7 @@
                             type="text"
                             v-model.trim="v$.role.name.$model"
                             :class="{
-                                'p-invalid': v$.role.name.$invalid
+                                'p-invalid': v$.role.name.$invalid && v$.role.name.$dirty
                             }"
                             maxLength="100"
                             @blur="v$.role.name.$touch()"
@@ -35,7 +35,7 @@
                             type="text"
                             v-model.trim="v$.role.code.$model"
                             :class="{
-                                'p-invalid': v$.role.code.$invalid
+                                'p-invalid': v$.role.code.$invalid && v$.role.code.$dirty
                             }"
                             maxLength="20"
                             @blur="v$.role.code.$touch()"
@@ -62,7 +62,7 @@
                             type="text"
                             v-model.trim="v$.role.description.$model"
                             :class="{
-                                'p-invalid': v$.role.description.$invalid
+                                'p-invalid': v$.role.description.$invalid && v$.role.description.$dirty
                             }"
                             maxLength="225"
                             @blur="v$.role.description.$touch()"
@@ -91,7 +91,7 @@
                             optionValue="VALUE_ID"
                             v-model="v$.role.roleTypeID.$model"
                             :class="{
-                                'p-invalid': v$.role.roleTypeID.$invalid
+                                'p-invalid': v$.role.roleTypeID.$invalid && v$.role.roleTypeID.$dirty
                             }"
                             @before-show="v$.role.roleTypeID.$touch()"
                             @change="onRoleTypeChange('roleTypeID', 'roleTypeCD', $event)"
@@ -204,13 +204,11 @@ export default defineComponent({
             })
         },
         onFieldChange(fieldName: string, value: any) {
-            console.log(value)
             this.$emit('fieldChanged', { fieldName, value })
         },
         loadDomains(type: string) {
             return axios.get(process.env.VUE_APP_RESTFUL_SERVICES_PATH + `domains/listValueDescriptionByType?DOMAIN_TYPE=${type}`)
         },
-        //Moram ovako da saljem CD posto ga nema u eventu, a saljem 2 parametra sa jednim dropdownom
         onRoleTypeChange(roleTypeIDField: string, roleTypeCDField: string, event) {
             const selRoleType = this.roleTypes.find((roleType) => roleType.VALUE_ID === event.value)
             if (selRoleType) {
