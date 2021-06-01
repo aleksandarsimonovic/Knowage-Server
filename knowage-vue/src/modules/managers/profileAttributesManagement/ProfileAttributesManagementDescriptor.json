@@ -5,7 +5,7 @@
   ],
   "attributeTypeValues": [
     { "name": "String", "value": "STRING" },
-    { "name": "Number", "value": "NUM" },
+    { "name": "Number", "value": "NUMBER" },
     { "name": "Date", "value": "DATE" }
   ],
   "headers": {

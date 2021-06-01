@@ -84,9 +84,7 @@ describe("ProfileAttributes Management loading", () => {
     expect(wrapper.vm.loading).toBe(true);
     expect(wrapper.find('[data-test="progress-bar"]').exists()).toBe(true);
   });
-  it("shows error toast if service returns error", async () => {
-    // not in this component
-  });
+
   it('shows "no data" label when loaded empty', async () => {
     axios.get.mockReturnValueOnce(
       Promise.resolve({

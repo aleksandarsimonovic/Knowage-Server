@@ -2,9 +2,9 @@ export interface iAttribute {
     attributeId: number | null;
     attributeName: string;
     attributeDescription: string | null;
-    allowUser: number | null;
-    multivalue: number | null;
-    syntax: number | null;
+    allowUser: Boolean | null;
+    multivalue: Boolean | null;
+    syntax: Boolean | null;
     lovId: number | null;
     value: Object | {};
 }

@@ -40,13 +40,7 @@
                 <label for="attributeName">{{ $t("managers.profileAttributesManagement.form.name") }} *</label>
               </span>
             </div>
-
-            <div v-if="v$.attribute.attributeName.$invalid && v$.attribute.attributeName.$dirty" class="p-error">
-              <small v-if="v$.attribute.attributeName.required.$invalid">{{ v$.attribute.attributeName.required.$message }}</small>
-            </div>
-            <div v-if="v$.attribute.attributeName.$invalid && v$.attribute.attributeName.$dirty" class="p-error">
-              <small v-if="v$.attribute.attributeName.maximumCharacters.$invalid">{{ v$.attribute.attributeName.maximumCharacters.$message }}</small>
-            </div>
+            <KnValidationMessages :vComp="v$.attribute.attributeName" :additionalTranslateParams="{ fieldName: $t('managers.profileAttributesManagement.form.name')}"></KnValidationMessages>
           </div>
 
           <div class="p-field">
@@ -62,13 +56,7 @@
                 <label for="attributeDescription">{{ $t("managers.profileAttributesManagement.form.description") }} *</label>
               </span>
             </div>
-
-            <div v-if="v$.attribute.attributeDescription.$invalid && v$.attribute.attributeDescription.$dirty" class="p-error">
-              <small v-if="v$.attribute.attributeDescription.required.$invalid">{{ v$.attribute.attributeDescription.required.$message }}</small>
-            </div>
-            <div v-if="v$.attribute.attributeDescription.$invalid && v$.attribute.attributeDescription.$dirty" class="p-error">
-              <small v-if="v$.attribute.attributeDescription.maximumCharacters.$invalid">{{ v$.attribute.attributeDescription.maximumCharacters.$message }}</small>
-            </div>
+            <KnValidationMessages :vComp="v$.attribute.attributeDescription" :additionalTranslateParams="{ fieldName: $t('managers.profileAttributesManagement.form.description')}"></KnValidationMessages>
           </div>
 
           <div class="p-field">
@@ -119,6 +107,7 @@
                   :options="lovs"
                   optionLabel="name"
                   optionValue="id"
+                  :onChange="checkSyntax"
                   class="p-dropdown p-component p-inputwrapper p-inputwrapper-filled kn-material-input"
                 />
 
@@ -129,7 +118,7 @@
 
           <div class="p-inputgroup p-col-6 p-sm-12 p-md-6">
             <div class="p-field-radiobutton p-col-6 p-sm-12 p-md-6">
-              <InputSwitch v-model="v$.attribute.multivalue.$model" />
+              <InputSwitch v-model="v$.attribute.multivalue.$model" :onInput="checkSyntax()" />
               <i class="pi pi-bars"></i>
               <label for="multiValue">{{ $t("managers.profileAttributesManagement.form.multiValue") }}</label>
             </div>
@@ -140,6 +129,40 @@
               <label for="multiValue">{{ $t("managers.profileAttributesManagement.form.allowUser") }}</label>
             </div>
           </div>
+
+        <div class="p-col-6 p-sm-12 p-md-6" :hidden="syntaxSelectHidden">
+            <div class="p-grid p-ai-start vertical-container">
+              <div class="p-col">
+                <RadioButton
+                  id="simple"
+                  name="syntax"
+                  :value="false"
+                  v-model="v$.attribute.syntax.$model"
+                />
+                <label for="simple">{{
+                  $t("managers.profileAttributesManagement.form.syntax.simple")
+                }}</label>
+                <div style="margin-top:10px" v-if="v$.attribute.syntax.$model === false">
+                  *Simple = ('Italy','USA','Serbia', ...)
+                </div>
+              </div>
+              <div class="p-col">
+                <RadioButton
+                  id="complex"
+                  name="syntax"
+                  :value="true"
+                  v-model="v$.attribute.syntax.$model"
+                />
+                <label for="complex">{{
+                  $t("managers.profileAttributesManagement.form.syntax.complex")
+                }}</label>
+                  <div style="margin-top:10px" v-if="v$.attribute.syntax.$model === true">
+                *Complex = {;{Italy;USA;Serbia; ...}}
+              </div>
+              </div>
+            </div>
+          </div>
+          
         </form>
       </template>
     </Card>
@@ -149,21 +172,15 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import axios, { AxiosResponse } from "axios";
+import { iAttribute, iLov } from "./ProfileAttributesManagement";
+import useValidate from "@vuelidate/core";
+import { createValidations } from '@/helpers/commons/validationHelper';
 import Dropdown from "primevue/dropdown";
 import InputSwitch from "primevue/inputswitch";
 import RadioButton from "primevue/radiobutton";
+import KnValidationMessages from '@/components/UI/KnValidatonMessages.vue'
 import ProfileAttributesManagementDescriptor from "./ProfileAttributesManagementDescriptor.json";
-import { iAttribute, iLov } from "./ProfileAttributesManagement";
-import { required, maxLength, helpers } from "@vuelidate/validators";
-import useValidate from "@vuelidate/core";
-import { extendedAlphanumeric } from '@/helpers/commons/regexHelper';
-const regex = (value: any) => {
-  return extendedAlphanumeric.test(value);
-};
-const attributeNamePattern = (value: any) => {
-  // eslint-disable-next-line no-useless-escape
-  return /^([a-zA-Z0-9\s\-\_])*$/.test(value);
-};
+import profileAttributesManagementValidationDescriptor from './ProfileAttributesManagementValidationDescriptor.json'
 
 export default defineComponent({
   name: "profile-attributes-form",
@@ -171,6 +188,7 @@ export default defineComponent({
     Dropdown,
     InputSwitch,
     RadioButton,
+    KnValidationMessages
   },
   props: {
     selectedAttribute: {
@@ -192,27 +210,7 @@ export default defineComponent({
            return
        }
 
-        if (typeof this.tempAttribute.value === "object" && this.tempAttribute.value !== null) {
-          this.tempAttribute.value = this.tempAttribute.value["name"];
-        }
-
-        this.isDirty = this.isFormDirty();
-
-        if (this.isDirty) {
-          this.$confirm.require({
-            message: this.$t("managers.usersManagement.unsavedChangesMessage"),
-            header: this.$t("managers.usersManagement.unsavedChangesHeader"),
-            icon: "pi pi-exclamation-triangle",
-            accept: () => {
-              this.populateForm(attribute);
-            },
-            reject: () => {
-              this.isDirty = false;
-            },
-          });
-        } else {
-          this.populateForm(attribute);
-        }
+        this.populateForm(attribute);
       },
     },
   },
@@ -233,43 +231,12 @@ export default defineComponent({
       disableLov: true as Boolean,
       enableLov: true as Boolean,
       LovSelectHidden: true as Boolean,
+      syntaxSelectHidden: true as Boolean,
     };
   },
   validations() {
     return {
-      attribute: {
-        attributeName: {
-          required: helpers.withMessage(
-            this.$t("common.validation.required"),
-            required
-          ),
-          attributeNamePattern,
-          maximumCharacters: helpers.withMessage(
-            this.$t("common.validation.maximumCharacters", {
-              length: 255,
-            }),
-            maxLength(255)
-          ),
-        },
-        attributeDescription: {
-          required: helpers.withMessage(
-            this.$t("common.validation.required"),
-            required
-          ),
-          regex,
-          maximumCharacters: helpers.withMessage(
-            this.$t("common.validation.maximumCharacters", {
-              length: 500,
-            }),
-            maxLength(500)
-          ),
-        },
-        value: {},
-        lov: {},
-        lovId: {},
-        multivalue: {},
-        allowUser: {},
-      },
+      attribute: createValidations("attribute", profileAttributesManagementValidationDescriptor.validations.attribute),
     };
   },
   async created() {
@@ -291,11 +258,15 @@ export default defineComponent({
     },
     showForm() {
       this.hideLovDropdown();
+      this.syntaxSelectHidden = true;
       this.resetForm();
       this.hideForm = false;
     },
     async save() {
       let response: AxiosResponse;
+      if(this.attribute.value === "NUMBER"){
+        this.attribute.value = "NUM";
+      }
       if (this.attribute.attributeId != null) {
         response = await axios.put(
           this.apiUrl + "attributes/" + this.attribute.attributeId,
@@ -327,26 +298,14 @@ export default defineComponent({
       this.$emit("closesForm");
     },
     onAttributeSelect(event: any) {
-      if (typeof this.tempAttribute.value === "object" && this.tempAttribute.value !== null) {
-        this.tempAttribute.value = this.tempAttribute.value["name"];
-      }
-
-      this.isDirty = this.isFormDirty();
-
-      if (this.isDirty) {
-        this.$confirm.require({
-          message: this.$t("managers.usersManagement.unsavedChangesMessage"),
-          header: this.$t("managers.usersManagement.unsavedChangesHeader"),
-          icon: "pi pi-exclamation-triangle",
-          accept: () => {
-            this.populateForm(event.data);
-          },
-          reject: () => {
-            this.isDirty = false;
-          },
-        });
-      } else {
-        this.populateForm(event.data);
+      this.populateForm(event.data);
+    },
+    checkSyntax(){
+      if(this.attribute.multivalue === true){
+       this.showSyntaxButtons(this.attribute);
+      }else{
+        this.attribute.syntax = null;
+        this.syntaxSelectHidden = true;
       }
     },
     populateForm(attribute: iAttribute) {
@@ -354,11 +313,12 @@ export default defineComponent({
       this.hideForm = false;
 
       this.attribute = { ...attribute };
-      this.tempAttribute = { ...attribute };
 
       if (typeof attribute.value === "object" && attribute.value !== null) {
         this.attribute.value = attribute.value["type"].toUpperCase();
       }
+
+      this.showSyntaxButtons(attribute);
 
       if (attribute.lovId !== null) {
         this.disableLovs();
@@ -367,9 +327,14 @@ export default defineComponent({
         this.enableLovs();
       }
     },
-    isFormDirty() {
-      return (JSON.stringify(this.attribute) !== JSON.stringify(this.tempAttribute));
+    showSyntaxButtons(attribute : iAttribute){
+     if(attribute.lovId !== null && attribute.multivalue === true){ 
+         this.syntaxSelectHidden = false;
+       }else{
+          this.syntaxSelectHidden = true;
+       }
     },
+    
     hideLovDropdown() {
       this.attribute.lovId = null;
       this.enableLovs();
